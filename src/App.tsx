@@ -7,6 +7,7 @@ import Campanhas from "./pages/Campanhas";
 import Analises from "./pages/Analises";
 import Relatorios from "./pages/Relatorios";
 import ImportarArquivos from "./pages/ImportarArquivos";
+import Recomendacoes from "./pages/Recomendacoes";
 
 function App() {
   return (
@@ -23,9 +24,11 @@ function App() {
 
           <Route path="/analises" element={<Analises />} />
 
-          <Route path="/relatorios" element={<Relatorios />} />
-
           <Route path="/importar-arquivos" element={<ImportarArquivos />} />
+
+          <Route path="/recomendacoes" element={<Recomendacoes />} />
+
+          <Route path="/relatorios" element={<Relatorios />} />
         </Routes>
 
         <p className="mt-8 text-xs text-slate-400">

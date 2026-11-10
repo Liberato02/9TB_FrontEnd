@@ -32,6 +32,11 @@ const menu = [
     caminho: "/importar-arquivos",
   },
   {
+    nome: "Recomendações da ÁRIA",
+    icone: BrainCircuit,
+    caminho: "/recomendacoes",
+  },
+  {
     nome: "Relatórios",
     icone: FileBarChart,
     caminho: "/relatorios",
