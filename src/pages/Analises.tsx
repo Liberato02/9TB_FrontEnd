@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   BarChart3,
-  BrainCircuit,
   TrendingUp,
   PhoneCall,
   PhoneOff,
@@ -59,233 +58,191 @@ function Analises() {
 
   const formatarNumero = (valor: number) => valor.toLocaleString("pt-BR");
 
+  const cards = indicadores
+    ? [
+        {
+          titulo: "Análises realizadas",
+          valor: indicadores.totalAnalises,
+          icone: BarChart3,
+          cor: "text-[#3F7DD9]",
+        },
+        {
+          titulo: "Contatos realizados",
+          valor: indicadores.contatosRealizados,
+          icone: PhoneCall,
+          cor: "text-green-600",
+        },
+        {
+          titulo: "Contatos fracassados",
+          valor: indicadores.contatosFracassados,
+          icone: PhoneOff,
+          cor: "text-[#F27D70]",
+        },
+        {
+          titulo: "Interesse imediato",
+          valor: indicadores.interesseImediato,
+          icone: TrendingUp,
+          cor: "text-[#3F7DD9]",
+        },
+        {
+          titulo: "Interesse futuro",
+          valor: indicadores.interesseFuturo,
+          icone: TrendingUp,
+          cor: "text-[#F27D70]",
+        },
+        {
+          titulo: "Atendimentos agendados",
+          valor: indicadores.atendimentosAgendados,
+          icone: CalendarCheck,
+          cor: "text-[#183B70]",
+        },
+      ]
+    : [];
+
+  const resultados = indicadores
+    ? [
+        {
+          titulo: "Sem interesse em pagar",
+          valor: indicadores.semInteresse,
+        },
+        {
+          titulo: "Telefones incorretos",
+          valor: indicadores.telefonesIncorretos,
+        },
+        {
+          titulo: "Boletos por e-mail",
+          valor: indicadores.boletosEmail,
+        },
+        {
+          titulo: "Boletos por WhatsApp",
+          valor: indicadores.boletosWhatsApp,
+        },
+      ]
+    : [];
+
   return (
-    <div>
+    <div className="space-y-5">
       {/* CABEÇALHO */}
-      <header className="mb-8">
+      <header>
         <p className="text-sm text-slate-500">ÁRIA / Inteligência de Dados</p>
 
-        <h2 className="mt-2 text-3xl font-semibold">Análises</h2>
+        <h2 className="mt-1 text-3xl font-semibold text-slate-800">Análises</h2>
 
-        <p className="mt-2 text-sm text-slate-500">
-          Explore indicadores, tendências e padrões identificados nos resultados
-          históricos.
+        <p className="mt-1 text-base text-slate-500">
+          Indicadores e resultados das campanhas.
         </p>
       </header>
 
       {/* CARREGAMENTO */}
       {carregando && (
-        <p className="mb-6 text-sm text-slate-500">Carregando indicadores...</p>
+        <div className="rounded-xl border border-slate-100 bg-white p-5">
+          <p className="text-base text-slate-500">Carregando indicadores...</p>
+        </div>
       )}
 
       {/* ERRO */}
       {!carregando && erro && (
-        <p className="mb-6 text-sm text-red-500">
-          Não foi possível carregar os indicadores.
-        </p>
+        <div className="rounded-xl border border-red-100 bg-red-50 p-4">
+          <p className="text-base text-red-600">
+            Não foi possível carregar os indicadores.
+          </p>
+        </div>
       )}
 
-      {/* INDICADORES */}
+      {/* DASHBOARD */}
       {!carregando && !erro && indicadores && (
         <>
-          <section className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-3">
-            <article className="rounded-2xl border border-slate-100 bg-white p-6">
-              <BarChart3 size={24} className="text-[#3F7DD9]" />
+          {/* INDICADORES PRINCIPAIS */}
+          <section className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+            {cards.map((card) => {
+              const Icone = card.icone;
 
-              <p className="mt-3 text-sm text-slate-500">Análises realizadas</p>
+              return (
+                <article
+                  key={card.titulo}
+                  className="min-w-0 rounded-xl border border-slate-100 bg-white p-4"
+                >
+                  <Icone size={21} className={card.cor} />
 
-              <h3 className="mt-3 text-3xl font-semibold">
-                {formatarNumero(indicadores.totalAnalises)}
-              </h3>
-            </article>
+                  <p className="mt-2 min-h-11 text-sm leading-5 text-slate-500">
+                    {card.titulo}
+                  </p>
 
-            <article className="rounded-2xl border border-slate-100 bg-white p-6">
-              <PhoneCall size={24} className="text-green-600" />
-
-              <p className="mt-3 text-sm text-slate-500">Contatos realizados</p>
-
-              <h3 className="mt-3 text-3xl font-semibold">
-                {formatarNumero(indicadores.contatosRealizados)}
-              </h3>
-            </article>
-
-            <article className="rounded-2xl border border-slate-100 bg-white p-6">
-              <PhoneOff size={24} className="text-[#F27D70]" />
-
-              <p className="mt-3 text-sm text-slate-500">
-                Contatos fracassados
-              </p>
-
-              <h3 className="mt-3 text-3xl font-semibold">
-                {formatarNumero(indicadores.contatosFracassados)}
-              </h3>
-            </article>
-
-            <article className="rounded-2xl border border-slate-100 bg-white p-6">
-              <TrendingUp size={24} className="text-[#3F7DD9]" />
-
-              <p className="mt-3 text-sm text-slate-500">
-                Interesse em pagar agora
-              </p>
-
-              <h3 className="mt-3 text-3xl font-semibold">
-                {formatarNumero(indicadores.interesseImediato)}
-              </h3>
-            </article>
-
-            <article className="rounded-2xl border border-slate-100 bg-white p-6">
-              <TrendingUp size={24} className="text-[#F27D70]" />
-
-              <p className="mt-3 text-sm text-slate-500">
-                Interesse em pagar no futuro
-              </p>
-
-              <h3 className="mt-3 text-3xl font-semibold">
-                {formatarNumero(indicadores.interesseFuturo)}
-              </h3>
-            </article>
-
-            <article className="rounded-2xl border border-slate-100 bg-white p-6">
-              <CalendarCheck size={24} className="text-[#183B70]" />
-
-              <p className="mt-3 text-sm text-slate-500">
-                Atendimentos agendados
-              </p>
-
-              <h3 className="mt-3 text-3xl font-semibold">
-                {formatarNumero(indicadores.atendimentosAgendados)}
-              </h3>
-            </article>
+                  <h3 className="mt-1 text-3xl font-semibold text-slate-800">
+                    {formatarNumero(card.valor)}
+                  </h3>
+                </article>
+              );
+            })}
           </section>
 
-          {/* RESULTADOS DETALHADOS */}
-          <section className="mb-8 rounded-2xl border border-slate-100 bg-white p-6">
-            <h3 className="text-lg font-semibold">
+          {/* CLASSIFICAÇÃO DOS RESULTADOS */}
+          <section className="rounded-xl border border-slate-100 bg-white p-4">
+            <h3 className="text-base font-semibold text-slate-800">
               Classificação dos resultados
             </h3>
 
-            <p className="mt-2 text-sm text-slate-500">
-              Distribuição dos resultados registrados nas análises.
-            </p>
+            <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+              {resultados.map((resultado) => (
+                <div
+                  key={resultado.titulo}
+                  className="min-w-0 rounded-lg bg-slate-50 p-3"
+                >
+                  <p className="text-sm text-slate-500">{resultado.titulo}</p>
 
-            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Sem interesse em pagar</p>
-
-                <p className="mt-2 text-2xl font-semibold">
-                  {formatarNumero(indicadores.semInteresse)}
-                </p>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">Telefones incorretos</p>
-
-                <p className="mt-2 text-2xl font-semibold">
-                  {formatarNumero(indicadores.telefonesIncorretos)}
-                </p>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">
-                  Boletos enviados por e-mail
-                </p>
-
-                <p className="mt-2 text-2xl font-semibold">
-                  {formatarNumero(indicadores.boletosEmail)}
-                </p>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">
-                  Boletos enviados por WhatsApp
-                </p>
-
-                <p className="mt-2 text-2xl font-semibold">
-                  {formatarNumero(indicadores.boletosWhatsApp)}
-                </p>
-              </div>
+                  <p className="mt-1 text-2xl font-semibold text-slate-800">
+                    {formatarNumero(resultado.valor)}
+                  </p>
+                </div>
+              ))}
             </div>
           </section>
 
-          {/* NOVO GRÁFICO DE RESULTADOS */}
-          <section className="mb-8 rounded-2xl border border-slate-100 bg-white p-6">
-            <h3 className="text-lg font-semibold">
-              Distribuição dos resultados
-            </h3>
+          {/* GRÁFICOS LADO A LADO */}
+          <section className="grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
+            {/* GRÁFICO DE RESULTADOS */}
+            <article className="min-w-0 overflow-hidden rounded-xl border border-slate-100 bg-white p-4">
+              <h3 className="text-base font-semibold text-slate-800">
+                Distribuição dos resultados
+              </h3>
 
-            <p className="mt-2 text-sm text-slate-500">
-              Comparação entre as classificações registradas nos contatos
-              realizados.
-            </p>
+              <p className="mt-1 text-sm text-slate-500">
+                Classificação dos resultados registrados.
+              </p>
 
-            <div className="mt-6">
-              <GraficoResultados
-                interesseImediato={indicadores.interesseImediato}
-                interesseFuturo={indicadores.interesseFuturo}
-                semInteresse={indicadores.semInteresse}
-                telefonesIncorretos={indicadores.telefonesIncorretos}
-              />
-            </div>
+              <div className="mt-3 min-w-0">
+                <GraficoResultados
+                  interesseImediato={indicadores.interesseImediato}
+                  interesseFuturo={indicadores.interesseFuturo}
+                  semInteresse={indicadores.semInteresse}
+                  telefonesIncorretos={indicadores.telefonesIncorretos}
+                />
+              </div>
+            </article>
+
+            {/* GRÁFICO DE CONTATOS */}
+            <article className="min-w-0 overflow-hidden rounded-xl border border-slate-100 bg-white p-4">
+              <h3 className="text-base font-semibold text-slate-800">
+                Distribuição dos contatos
+              </h3>
+
+              <p className="mt-1 text-sm text-slate-500">
+                Contatos realizados e fracassados.
+              </p>
+
+              <div className="mt-3 min-w-0">
+                <GraficoContatos
+                  realizados={indicadores.contatosRealizados}
+                  fracassados={indicadores.contatosFracassados}
+                />
+              </div>
+            </article>
           </section>
         </>
       )}
 
-      {/* ÁREAS DE ANÁLISE */}
-      <section className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <article className="rounded-2xl border border-slate-100 bg-white p-6">
-          <BarChart3 size={24} className="text-[#3F7DD9]" />
-
-          <h3 className="mt-4 text-lg font-semibold">Desempenho</h3>
-
-          <p className="mt-2 text-sm text-slate-500">
-            Acompanhe indicadores e resultados consolidados das campanhas.
-          </p>
-        </article>
-
-        <article className="rounded-2xl border border-slate-100 bg-white p-6">
-          <TrendingUp size={24} className="text-[#F27D70]" />
-
-          <h3 className="mt-4 text-lg font-semibold">Tendências</h3>
-
-          <p className="mt-2 text-sm text-slate-500">
-            Identifique mudanças e padrões ao longo do tempo.
-          </p>
-        </article>
-
-        <article className="rounded-2xl border border-slate-100 bg-white p-6">
-          <BrainCircuit size={24} className="text-[#183B70]" />
-
-          <h3 className="mt-4 text-lg font-semibold">
-            Inteligência Artificial
-          </h3>
-
-          <p className="mt-2 text-sm text-slate-500">
-            Área reservada para análises inteligentes e recomendações futuras.
-          </p>
-        </article>
-      </section>
-
-      {/* PAINEL DE CONTATOS */}
-      <section className="mt-8 rounded-2xl border border-slate-100 bg-white p-6">
-        <h3 className="text-lg font-semibold">Distribuição dos contatos</h3>
-
-        <p className="mt-2 text-sm text-slate-500">
-          Comparação entre contatos realizados e fracassados.
-        </p>
-
-        <div className="mt-6">
-          {indicadores && !carregando && !erro ? (
-            <GraficoContatos
-              realizados={indicadores.contatosRealizados}
-              fracassados={indicadores.contatosFracassados}
-            />
-          ) : (
-            <p className="text-sm text-slate-400">Gráfico indisponível.</p>
-          )}
-        </div>
-      </section>
-
-      <p className="mt-6 text-xs text-slate-400">
+      {/* RODAPÉ */}
+      <p className="text-sm text-slate-400">
         Ambiente demonstrativo — dados fictícios.
       </p>
     </div>
