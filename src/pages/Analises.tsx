@@ -13,7 +13,9 @@ import {
   calcularIndicadores,
   type IndicadoresAnalises,
 } from "../services/indicadorService";
+
 import GraficoContatos from "../components/charts/GraficoContatos";
+import GraficoResultados from "../components/charts/GraficoResultados";
 
 function Analises() {
   const [indicadores, setIndicadores] = useState<IndicadoresAnalises | null>(
@@ -204,6 +206,27 @@ function Analises() {
               </div>
             </div>
           </section>
+
+          {/* NOVO GRÁFICO DE RESULTADOS */}
+          <section className="mb-8 rounded-2xl border border-slate-100 bg-white p-6">
+            <h3 className="text-lg font-semibold">
+              Distribuição dos resultados
+            </h3>
+
+            <p className="mt-2 text-sm text-slate-500">
+              Comparação entre as classificações registradas nos contatos
+              realizados.
+            </p>
+
+            <div className="mt-6">
+              <GraficoResultados
+                interesseImediato={indicadores.interesseImediato}
+                interesseFuturo={indicadores.interesseFuturo}
+                semInteresse={indicadores.semInteresse}
+                telefonesIncorretos={indicadores.telefonesIncorretos}
+              />
+            </div>
+          </section>
         </>
       )}
 
@@ -242,7 +265,7 @@ function Analises() {
         </article>
       </section>
 
-      {/* PAINEL ANALÍTICO */}
+      {/* PAINEL DE CONTATOS */}
       <section className="mt-8 rounded-2xl border border-slate-100 bg-white p-6">
         <h3 className="text-lg font-semibold">Distribuição dos contatos</h3>
 
