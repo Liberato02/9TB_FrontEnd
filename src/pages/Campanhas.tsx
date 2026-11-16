@@ -1,5 +1,7 @@
-import { CalendarDays, Search, BarChart3 } from "lucide-react";
+import { CalendarDays, Search, BarChart3, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 import { listarCampanhas } from "../services/campanhaService";
 import type { Campanha } from "../types/Campanha";
 
@@ -65,7 +67,7 @@ function Campanhas() {
         </p>
       </header>
 
-      {/* ÁREA DE PESQUISA */}
+      {/* PESQUISA */}
       <section className="mb-6 rounded-2xl border border-slate-100 bg-white p-6">
         <div className="flex items-center gap-3">
           <Search size={20} className="text-slate-400" />
@@ -73,26 +75,29 @@ function Campanhas() {
           <input
             type="text"
             placeholder="Pesquisar campanhas..."
+            aria-label="Pesquisar campanhas"
             value={pesquisa}
-            onChange={(event) => setPesquisa(event.target.value)}
+            onChange={(evento) => setPesquisa(evento.target.value)}
             className="w-full outline-none placeholder:text-slate-400"
           />
         </div>
       </section>
 
-      {/* RESUMO */}
+      {/* INDICADORES */}
       <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
-        <div className="rounded-2xl border border-slate-100 bg-white p-6">
+        <article className="rounded-2xl border border-slate-100 bg-white p-6">
           <div className="flex items-center gap-3">
             <CalendarDays className="text-[#3F7DD9]" size={22} />
 
             <p className="text-sm text-slate-500">Campanhas registradas</p>
           </div>
 
-          <h3 className="mt-4 text-3xl font-semibold">{totalCampanhas}</h3>
-        </div>
+          <h3 className="mt-4 text-3xl font-semibold">
+            {totalCampanhas.toLocaleString("pt-BR")}
+          </h3>
+        </article>
 
-        <div className="rounded-2xl border border-slate-100 bg-white p-6">
+        <article className="rounded-2xl border border-slate-100 bg-white p-6">
           <div className="flex items-center gap-3">
             <BarChart3 className="text-[#F27D70]" size={22} />
 
@@ -102,16 +107,16 @@ function Campanhas() {
           <h3 className="mt-4 text-3xl font-semibold">
             {totalAnalises.toLocaleString("pt-BR")}
           </h3>
-        </div>
+        </article>
       </section>
 
-      {/* LISTAGEM */}
+      {/* HISTÓRICO */}
       <section className="mt-8 rounded-2xl border border-slate-100 bg-white p-6">
         <h3 className="text-lg font-semibold">Histórico de campanhas</h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          As campanhas registradas aparecerão aqui, com seus indicadores e
-          resultados.
+          Consulte os indicadores e abra os detalhes de cada campanha
+          registrada.
         </p>
 
         <div className="mt-6 overflow-x-auto">
@@ -123,6 +128,7 @@ function Campanhas() {
                 <th className="px-4 py-3 font-medium">Devedores</th>
                 <th className="px-4 py-3 font-medium">Análises</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">Ações</th>
               </tr>
             </thead>
 
@@ -130,8 +136,8 @@ function Campanhas() {
               {carregando && (
                 <tr>
                   <td
-                    colSpan={5}
-                    className="px-4 py-10 text-center text-sm text-slate-400"
+                    colSpan={6}
+                    className="px-4 py-10 text-center text-slate-400"
                   >
                     Carregando campanhas...
                   </td>
@@ -141,8 +147,8 @@ function Campanhas() {
               {!carregando && erro && (
                 <tr>
                   <td
-                    colSpan={5}
-                    className="px-4 py-10 text-center text-sm text-red-500"
+                    colSpan={6}
+                    className="px-4 py-10 text-center text-red-500"
                   >
                     Não foi possível carregar as campanhas.
                   </td>
@@ -152,10 +158,10 @@ function Campanhas() {
               {!carregando && !erro && campanhasFiltradas.length === 0 && (
                 <tr>
                   <td
-                    colSpan={5}
-                    className="px-4 py-10 text-center text-sm text-slate-400"
+                    colSpan={6}
+                    className="px-4 py-10 text-center text-slate-400"
                   >
-                    Nenhuma campanha encontrada para sua pesquisa.
+                    Nenhuma campanha encontrada.
                   </td>
                 </tr>
               )}
@@ -189,6 +195,16 @@ function Campanhas() {
                       >
                         {campanha.status}
                       </span>
+                    </td>
+
+                    <td className="px-4 py-4">
+                      <Link
+                        to={`/campanhas/${campanha.id}`}
+                        className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-50 px-3 py-2 font-medium text-[#183B70] transition-colors hover:bg-blue-100"
+                      >
+                        <Eye size={17} />
+                        Ver detalhes
+                      </Link>
                     </td>
                   </tr>
                 ))}

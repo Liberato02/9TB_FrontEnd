@@ -4,6 +4,7 @@ import Sidebar from "./components/layout/Sidebar";
 
 import Dashboard from "./pages/Dashboard";
 import Campanhas from "./pages/Campanhas";
+import DetalhesCampanha from "./pages/DetalhesCampanha";
 import Analises from "./pages/Analises";
 import Relatorios from "./pages/Relatorios";
 import ImportarArquivos from "./pages/ImportarArquivos";
@@ -12,15 +13,15 @@ import Recomendacoes from "./pages/Recomendacoes";
 function App() {
   return (
     <div className="min-h-screen bg-[#F6F8FC] text-[#183B70] md:flex">
-      {/* MENU LATERAL */}
       <Sidebar />
 
-      {/* CONTEÚDO DAS PÁGINAS */}
       <main className="min-w-0 flex-1 p-6 md:p-10">
         <Routes>
           <Route path="/" element={<Dashboard />} />
 
           <Route path="/campanhas" element={<Campanhas />} />
+
+          <Route path="/campanhas/:id" element={<DetalhesCampanha />} />
 
           <Route path="/analises" element={<Analises />} />
 
