@@ -35,7 +35,7 @@ function Campanhas() {
       }
     }
 
-    carregarCampanhas();
+    void carregarCampanhas();
 
     return () => {
       ativo = false;
@@ -48,6 +48,18 @@ function Campanhas() {
     (total, campanha) => total + campanha.analises,
     0,
   );
+
+  function exibirIndicador(valor: number): string {
+    if (carregando) {
+      return "Carregando...";
+    }
+
+    if (erro) {
+      return "—";
+    }
+
+    return valor.toLocaleString("pt-BR");
+  }
 
   const campanhasFiltradas = campanhas.filter((campanha) =>
     campanha.nome.toLowerCase().includes(pesquisa.toLowerCase()),
@@ -84,7 +96,10 @@ function Campanhas() {
       </section>
 
       {/* INDICADORES */}
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      <section
+        className="grid grid-cols-1 gap-5 md:grid-cols-2"
+        aria-busy={carregando}
+      >
         <article className="rounded-2xl border border-slate-100 bg-white p-6">
           <div className="flex items-center gap-3">
             <CalendarDays className="text-[#3F7DD9]" size={22} />
@@ -93,7 +108,7 @@ function Campanhas() {
           </div>
 
           <h3 className="mt-4 text-3xl font-semibold">
-            {totalCampanhas.toLocaleString("pt-BR")}
+            {exibirIndicador(totalCampanhas)}
           </h3>
         </article>
 
@@ -105,7 +120,7 @@ function Campanhas() {
           </div>
 
           <h3 className="mt-4 text-3xl font-semibold">
-            {totalAnalises.toLocaleString("pt-BR")}
+            {exibirIndicador(totalAnalises)}
           </h3>
         </article>
       </section>
@@ -148,6 +163,7 @@ function Campanhas() {
                 <tr>
                   <td
                     colSpan={6}
+                    role="alert"
                     className="px-4 py-10 text-center text-red-500"
                   >
                     Não foi possível carregar as campanhas.
@@ -161,7 +177,9 @@ function Campanhas() {
                     colSpan={6}
                     className="px-4 py-10 text-center text-slate-400"
                   >
-                    Nenhuma campanha encontrada.
+                    {pesquisa.trim()
+                      ? "Nenhuma campanha corresponde à pesquisa."
+                      : "Nenhuma campanha encontrada."}
                   </td>
                 </tr>
               )}
