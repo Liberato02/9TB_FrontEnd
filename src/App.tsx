@@ -1,15 +1,23 @@
+import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import Sidebar from "./components/layout/Sidebar";
 
-import Dashboard from "./pages/Dashboard";
-import Campanhas from "./pages/Campanhas";
-import DetalhesCampanha from "./pages/DetalhesCampanha";
-import Analises from "./pages/Analises";
-import Relatorios from "./pages/Relatorios";
-import ImportarArquivos from "./pages/ImportarArquivos";
-import Recomendacoes from "./pages/Recomendacoes";
-import PaginaNaoEncontrada from "./pages/PaginaNaoEncontrada";
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+
+const Campanhas = lazy(() => import("./pages/Campanhas"));
+
+const DetalhesCampanha = lazy(() => import("./pages/DetalhesCampanha"));
+
+const Analises = lazy(() => import("./pages/Analises"));
+
+const Relatorios = lazy(() => import("./pages/Relatorios"));
+
+const ImportarArquivos = lazy(() => import("./pages/ImportarArquivos"));
+
+const Recomendacoes = lazy(() => import("./pages/Recomendacoes"));
+
+const PaginaNaoEncontrada = lazy(() => import("./pages/PaginaNaoEncontrada"));
 
 function App() {
   return (
@@ -17,23 +25,41 @@ function App() {
       <Sidebar />
 
       <main className="min-w-0 flex-1 p-6 md:p-10">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
+        <Suspense
+          fallback={
+            <div
+              role="status"
+              aria-live="polite"
+              className="flex min-h-[50vh] items-center justify-center"
+            >
+              <div className="rounded-xl border border-slate-100 bg-white px-8 py-6 text-center">
+                <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#3F7DD9]" />
 
-          <Route path="/campanhas" element={<Campanhas />} />
+                <p className="mt-4 text-sm text-slate-500">
+                  Carregando página...
+                </p>
+              </div>
+            </div>
+          }
+        >
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
 
-          <Route path="/campanhas/:id" element={<DetalhesCampanha />} />
+            <Route path="/campanhas" element={<Campanhas />} />
 
-          <Route path="/analises" element={<Analises />} />
+            <Route path="/campanhas/:id" element={<DetalhesCampanha />} />
 
-          <Route path="/importar-arquivos" element={<ImportarArquivos />} />
+            <Route path="/analises" element={<Analises />} />
 
-          <Route path="/recomendacoes" element={<Recomendacoes />} />
+            <Route path="/importar-arquivos" element={<ImportarArquivos />} />
 
-          <Route path="/relatorios" element={<Relatorios />} />
+            <Route path="/recomendacoes" element={<Recomendacoes />} />
 
-          <Route path="*" element={<PaginaNaoEncontrada />} />
-        </Routes>
+            <Route path="/relatorios" element={<Relatorios />} />
+
+            <Route path="*" element={<PaginaNaoEncontrada />} />
+          </Routes>
+        </Suspense>
 
         <p className="mt-8 text-xs text-slate-400">
           ÁRIA — Ambiente demonstrativo com dados fictícios.
