@@ -1,13 +1,24 @@
-import { CalendarDays, Search, BarChart3, Eye } from "lucide-react";
+import { CalendarDays, CalendarClock, Search, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
-import { listarCampanhas } from "../services/campanhaService";
-import type { Campanha } from "../types/Campanha";
+import { listarCampanhasApi } from "../services/campanhaService";
+import type { CampanhaApi } from "../types/CampanhaApi";
+
+function formatarData(data: string): string {
+  const resultado = /^(\d{4})-(\d{2})-(\d{2})/.exec(data);
+
+  if (!resultado) {
+    return "Não informada";
+  }
+
+  const [, ano, mes, dia] = resultado;
+
+  return `${dia}/${mes}/${ano}`;
+}
 
 function Campanhas() {
   const [pesquisa, setPesquisa] = useState("");
-  const [campanhas, setCampanhas] = useState<Campanha[]>([]);
+  const [campanhas, setCampanhas] = useState<CampanhaApi[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
 
@@ -16,7 +27,7 @@ function Campanhas() {
 
     async function carregarCampanhas() {
       try {
-        const dados = await listarCampanhas();
+        const dados = await listarCampanhasApi();
 
         if (ativo) {
           setCampanhas(dados);
@@ -44,12 +55,17 @@ function Campanhas() {
 
   const totalCampanhas = campanhas.length;
 
-  const totalAnalises = campanhas.reduce(
-    (total, campanha) => total + campanha.analises,
-    0,
+  const ultimaDataCriacao = campanhas.reduce(
+    (maisRecente, campanha) =>
+      campanha.dataCriacao > maisRecente ? campanha.dataCriacao : maisRecente,
+    "",
   );
 
-  function exibirIndicador(valor: number): string {
+  const campanhasFiltradas = campanhas.filter((campanha) =>
+    campanha.nome.toLowerCase().includes(pesquisa.trim().toLowerCase()),
+  );
+
+  function exibirTotal(): string {
     if (carregando) {
       return "Carregando...";
     }
@@ -58,12 +74,20 @@ function Campanhas() {
       return "—";
     }
 
-    return valor.toLocaleString("pt-BR");
+    return totalCampanhas.toLocaleString("pt-BR");
   }
 
-  const campanhasFiltradas = campanhas.filter((campanha) =>
-    campanha.nome.toLowerCase().includes(pesquisa.toLowerCase()),
-  );
+  function exibirUltimoCadastro(): string {
+    if (carregando) {
+      return "Carregando...";
+    }
+
+    if (erro || !ultimaDataCriacao) {
+      return "—";
+    }
+
+    return formatarData(ultimaDataCriacao);
+  }
 
   return (
     <div>
@@ -74,8 +98,8 @@ function Campanhas() {
         <h2 className="mt-2 text-3xl font-semibold">Campanhas históricas</h2>
 
         <p className="mt-2 text-sm text-slate-500">
-          Consulte o histórico e acompanhe os resultados das campanhas
-          analisadas.
+          Consulte as campanhas registradas no sistema. Os dados desta listagem
+          são obtidos do backend da ÁRIA.
         </p>
       </header>
 
@@ -95,7 +119,7 @@ function Campanhas() {
         </div>
       </section>
 
-      {/* INDICADORES */}
+      {/* INDICADORES REAIS */}
       <section
         className="grid grid-cols-1 gap-5 md:grid-cols-2"
         aria-busy={carregando}
@@ -107,20 +131,18 @@ function Campanhas() {
             <p className="text-sm text-slate-500">Campanhas registradas</p>
           </div>
 
-          <h3 className="mt-4 text-3xl font-semibold">
-            {exibirIndicador(totalCampanhas)}
-          </h3>
+          <h3 className="mt-4 text-3xl font-semibold">{exibirTotal()}</h3>
         </article>
 
         <article className="rounded-2xl border border-slate-100 bg-white p-6">
           <div className="flex items-center gap-3">
-            <BarChart3 className="text-[#F27D70]" size={22} />
+            <CalendarClock className="text-[#F27D70]" size={22} />
 
-            <p className="text-sm text-slate-500">Análises realizadas</p>
+            <p className="text-sm text-slate-500">Último cadastro</p>
           </div>
 
           <h3 className="mt-4 text-3xl font-semibold">
-            {exibirIndicador(totalAnalises)}
+            {exibirUltimoCadastro()}
           </h3>
         </article>
       </section>
@@ -130,8 +152,7 @@ function Campanhas() {
         <h3 className="text-lg font-semibold">Histórico de campanhas</h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          Consulte os indicadores e abra os detalhes de cada campanha
-          registrada.
+          Relação de campanhas cadastradas no banco de dados.
         </p>
 
         <div className="mt-6 overflow-x-auto">
@@ -139,10 +160,9 @@ function Campanhas() {
             <thead className="border-b border-slate-200 text-slate-500">
               <tr>
                 <th className="px-4 py-3 font-medium">Campanha</th>
-                <th className="px-4 py-3 font-medium">Período</th>
-                <th className="px-4 py-3 font-medium">Devedores</th>
-                <th className="px-4 py-3 font-medium">Análises</th>
-                <th className="px-4 py-3 font-medium">Status</th>
+
+                <th className="px-4 py-3 font-medium">Data de cadastro</th>
+
                 <th className="px-4 py-3 font-medium">Ações</th>
               </tr>
             </thead>
@@ -151,7 +171,7 @@ function Campanhas() {
               {carregando && (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={3}
                     className="px-4 py-10 text-center text-slate-400"
                   >
                     Carregando campanhas...
@@ -162,11 +182,12 @@ function Campanhas() {
               {!carregando && erro && (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={3}
                     role="alert"
                     className="px-4 py-10 text-center text-red-500"
                   >
-                    Não foi possível carregar as campanhas.
+                    Não foi possível carregar as campanhas. Verifique a conexão
+                    com o backend.
                   </td>
                 </tr>
               )}
@@ -174,7 +195,7 @@ function Campanhas() {
               {!carregando && !erro && campanhasFiltradas.length === 0 && (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={3}
                     className="px-4 py-10 text-center text-slate-400"
                   >
                     {pesquisa.trim()
@@ -193,36 +214,18 @@ function Campanhas() {
                   >
                     <td className="px-4 py-4 font-medium">{campanha.nome}</td>
 
-                    <td className="px-4 py-4">{campanha.periodo}</td>
-
                     <td className="px-4 py-4">
-                      {campanha.devedores.toLocaleString("pt-BR")}
-                    </td>
-
-                    <td className="px-4 py-4">
-                      {campanha.analises.toLocaleString("pt-BR")}
+                      {formatarData(campanha.dataCriacao)}
                     </td>
 
                     <td className="px-4 py-4">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-medium ${
-                          campanha.status === "Concluída"
-                            ? "bg-green-50 text-green-700"
-                            : "bg-blue-50 text-blue-700"
-                        }`}
-                      >
-                        {campanha.status}
-                      </span>
-                    </td>
-
-                    <td className="px-4 py-4">
-                      <Link
-                        to={`/campanhas/${campanha.id}`}
-                        className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-50 px-3 py-2 font-medium text-[#183B70] transition-colors hover:bg-blue-100"
+                        title="A tela de detalhes ainda será integrada ao backend."
+                        className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-slate-500"
                       >
                         <Eye size={17} />
-                        Ver detalhes
-                      </Link>
+                        Detalhes em integração
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -232,7 +235,8 @@ function Campanhas() {
       </section>
 
       <p className="mt-6 text-xs text-slate-400">
-        Dados demonstrativos — ambiente de desenvolvimento.
+        Listagem conectada ao banco de dados da ÁRIA. As demais telas serão
+        integradas gradualmente.
       </p>
     </div>
   );

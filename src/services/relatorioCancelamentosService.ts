@@ -21,8 +21,10 @@ import ExcelJS from "exceljs";
 import type { CampanhaApi } from "../types/CampanhaApi";
 import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
 
+type CampanhaRelatorio = Pick<CampanhaApi, "id" | "nome">;
+
 export type DadosRelatorioCancelamentos = {
-  campanha: CampanhaApi;
+  campanha: CampanhaRelatorio;
   indicadores: IndicadoresCampanhaApi;
 };
 
@@ -41,7 +43,7 @@ function formatarPercentual(valor: number) {
   })}%`;
 }
 
-function nomeArquivo(campanha: CampanhaApi) {
+function nomeArquivo(campanha: CampanhaRelatorio) {
   return `relatorio-cancelamentos-campanha-${campanha.id}`;
 }
 
