@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent } from "react";
+import { useRef, useState, type ChangeEvent } from "react";
 import {
   FileSpreadsheet,
   FileText,
@@ -11,6 +11,11 @@ import {
 } from "lucide-react";
 
 import ResultadoImportacao from "../components/importacao/ResultadoImportacao";
+
+import {
+  importarTitulosCsv,
+  importarCancelamentosPdf,
+} from "../services/importacaoService";
 
 import type { ImportacaoCsvApi } from "../types/ImportacaoCsvApi";
 import type { ImportacaoPdfApi } from "../types/ImportacaoPdfApi";
@@ -32,6 +37,26 @@ const exemploPdf: ImportacaoPdfApi = {
   existentes: 6,
 };
 
+function formatarTamanho(bytes: number): string {
+  if (bytes < 1024) {
+    return `${bytes} bytes`;
+  }
+
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function obterMensagemErro(erro: unknown): string {
+  if (erro instanceof Error) {
+    return erro.message;
+  }
+
+  return "Ocorreu um erro inesperado durante a importação.";
+}
+
 function ImportarArquivos() {
   const [arquivoCsv, setArquivoCsv] = useState<File | null>(null);
   const [arquivoPdf, setArquivoPdf] = useState<File | null>(null);
@@ -39,17 +64,21 @@ function ImportarArquivos() {
   const [erroCsv, setErroCsv] = useState("");
   const [erroPdf, setErroPdf] = useState("");
 
+  const [resultadoCsv, setResultadoCsv] = useState<ImportacaoCsvApi | null>(
+    null,
+  );
+
+  const [resultadoPdf, setResultadoPdf] = useState<ImportacaoPdfApi | null>(
+    null,
+  );
+
+  const [enviando, setEnviando] = useState<TipoArquivo | null>(null);
+
   const [visualizacao, setVisualizacao] = useState<TipoArquivo | null>(null);
 
-  const formatarTamanho = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} bytes`;
+  const envioEmAndamento = useRef(false);
 
-    if (bytes < 1024 * 1024) {
-      return `${(bytes / 1024).toFixed(1)} KB`;
-    }
-
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
-  };
+  const importacaoEmAndamento = enviando !== null;
 
   function selecionarArquivo(
     evento: ChangeEvent<HTMLInputElement>,
@@ -59,9 +88,19 @@ function ImportarArquivos() {
 
     evento.target.value = "";
 
-    if (!arquivo) return;
+    if (!arquivo || envioEmAndamento.current) {
+      return;
+    }
 
     const extensao = tipo === "csv" ? ".csv" : ".pdf";
+
+    if (tipo === "csv") {
+      setResultadoCsv(null);
+      setErroCsv("");
+    } else {
+      setResultadoPdf(null);
+      setErroPdf("");
+    }
 
     if (!arquivo.name.toLowerCase().endsWith(extensao)) {
       const mensagem = `Selecione um arquivo no formato ${extensao}.`;
@@ -93,20 +132,76 @@ function ImportarArquivos() {
 
     if (tipo === "csv") {
       setArquivoCsv(arquivo);
-      setErroCsv("");
     } else {
       setArquivoPdf(arquivo);
-      setErroPdf("");
     }
   }
 
   function removerArquivo(tipo: TipoArquivo) {
+    if (envioEmAndamento.current) {
+      return;
+    }
+
     if (tipo === "csv") {
       setArquivoCsv(null);
       setErroCsv("");
     } else {
       setArquivoPdf(null);
       setErroPdf("");
+    }
+  }
+
+  async function executarImportacao(tipo: TipoArquivo) {
+    if (envioEmAndamento.current) {
+      return;
+    }
+
+    const arquivo = tipo === "csv" ? arquivoCsv : arquivoPdf;
+
+    if (!arquivo) {
+      if (tipo === "csv") {
+        setErroCsv("Selecione um arquivo CSV.");
+      } else {
+        setErroPdf("Selecione um arquivo PDF.");
+      }
+
+      return;
+    }
+
+    envioEmAndamento.current = true;
+    setEnviando(tipo);
+
+    if (tipo === "csv") {
+      setErroCsv("");
+      setResultadoCsv(null);
+    } else {
+      setErroPdf("");
+      setResultadoPdf(null);
+    }
+
+    try {
+      if (tipo === "csv") {
+        const resultado = await importarTitulosCsv(arquivo);
+
+        setResultadoCsv(resultado);
+        setArquivoCsv(null);
+      } else {
+        const resultado = await importarCancelamentosPdf(arquivo);
+
+        setResultadoPdf(resultado);
+        setArquivoPdf(null);
+      }
+    } catch (erro) {
+      const mensagem = obterMensagemErro(erro);
+
+      if (tipo === "csv") {
+        setErroCsv(mensagem);
+      } else {
+        setErroPdf(mensagem);
+      }
+    } finally {
+      envioEmAndamento.current = false;
+      setEnviando(null);
     }
   }
 
@@ -122,13 +217,11 @@ function ImportarArquivos() {
         <h2 className="mt-2 text-3xl font-semibold">Importação de Arquivos</h2>
 
         <p className="mt-2 text-sm text-slate-500">
-          Selecione arquivos de títulos e cancelamentos para preparar as
-          análises da ÁRIA.
+          Importe títulos e cancelamentos para o banco de dados da ÁRIA.
         </p>
       </header>
 
       <section className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
-        {/* CSV */}
         <article className="rounded-2xl border border-slate-100 bg-white p-6">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-blue-50 p-3">
@@ -156,8 +249,9 @@ function ImportarArquivos() {
               id="arquivo-csv"
               type="file"
               accept=".csv"
+              disabled={importacaoEmAndamento}
               onChange={(evento) => selecionarArquivo(evento, "csv")}
-              className="mt-3 w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-100 file:px-3 file:py-2 file:font-medium file:text-[#183B70]"
+              className="mt-3 w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-100 file:px-3 file:py-2 file:font-medium file:text-[#183B70] disabled:cursor-not-allowed disabled:opacity-50"
             />
 
             <p className="mt-3 text-xs text-slate-500">
@@ -171,6 +265,7 @@ function ImportarArquivos() {
               className="mt-4 flex items-start gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700"
             >
               <AlertCircle size={18} className="shrink-0" />
+
               <span>{erroCsv}</span>
             </div>
           )}
@@ -198,9 +293,10 @@ function ImportarArquivos() {
 
                 <button
                   type="button"
+                  disabled={importacaoEmAndamento}
                   onClick={() => removerArquivo("csv")}
                   aria-label="Remover arquivo CSV"
-                  className="rounded-lg p-1 text-slate-500 hover:bg-green-100"
+                  className="rounded-lg p-1 text-slate-500 hover:bg-green-100 disabled:opacity-50"
                 >
                   <X size={18} />
                 </button>
@@ -213,25 +309,36 @@ function ImportarArquivos() {
 
             <p className="mt-2 text-sm text-slate-500">
               O backend exige 11 colunas em uma estrutura específica. Uma
-              importação válida cria automaticamente uma campanha.
+              importação válida cria automaticamente uma nova campanha.
             </p>
           </div>
 
           <button
             type="button"
-            disabled
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-200 px-5 py-3 text-sm font-semibold text-slate-500 disabled:cursor-not-allowed"
+            disabled={!arquivoCsv || importacaoEmAndamento}
+            onClick={() => void executarImportacao("csv")}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#3F7DD9] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#183B70] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
           >
             <Upload size={18} />
-            Importar títulos
+
+            {enviando === "csv" ? "Importando títulos..." : "Importar títulos"}
           </button>
 
           <p className="mt-3 text-center text-xs text-slate-400">
-            Envio disponível após integração com a API.
+            O envio registra dados reais no PostgreSQL.
           </p>
+
+          {resultadoCsv && (
+            <div className="mt-6 space-y-3" role="status">
+              <p className="text-sm font-semibold text-green-700">
+                Importação CSV concluída com sucesso.
+              </p>
+
+              <ResultadoImportacao tipo="csv" resultado={resultadoCsv} />
+            </div>
+          )}
         </article>
 
-        {/* PDF */}
         <article className="rounded-2xl border border-slate-100 bg-white p-6">
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-orange-50 p-3">
@@ -248,8 +355,8 @@ function ImportarArquivos() {
           </div>
 
           <p className="mt-5 text-sm text-slate-500">
-            Selecione um PDF de cancelamentos para posterior cruzamento com os
-            títulos das campanhas.
+            Selecione um PDF de cancelamentos para cruzamento com os títulos das
+            campanhas.
           </p>
 
           <div className="mt-5 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5">
@@ -261,8 +368,9 @@ function ImportarArquivos() {
               id="arquivo-pdf"
               type="file"
               accept=".pdf"
+              disabled={importacaoEmAndamento}
               onChange={(evento) => selecionarArquivo(evento, "pdf")}
-              className="mt-3 w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-orange-100 file:px-3 file:py-2 file:font-medium file:text-[#183B70]"
+              className="mt-3 w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-orange-100 file:px-3 file:py-2 file:font-medium file:text-[#183B70] disabled:cursor-not-allowed disabled:opacity-50"
             />
 
             <p className="mt-3 text-xs text-slate-500">
@@ -276,6 +384,7 @@ function ImportarArquivos() {
               className="mt-4 flex items-start gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700"
             >
               <AlertCircle size={18} className="shrink-0" />
+
               <span>{erroPdf}</span>
             </div>
           )}
@@ -303,9 +412,10 @@ function ImportarArquivos() {
 
                 <button
                   type="button"
+                  disabled={importacaoEmAndamento}
                   onClick={() => removerArquivo("pdf")}
                   aria-label="Remover arquivo PDF"
-                  className="rounded-lg p-1 text-slate-500 hover:bg-green-100"
+                  className="rounded-lg p-1 text-slate-500 hover:bg-green-100 disabled:opacity-50"
                 >
                   <X size={18} />
                 </button>
@@ -317,35 +427,48 @@ function ImportarArquivos() {
             <p className="text-sm font-medium">Informações da importação</p>
 
             <p className="mt-2 text-sm text-slate-500">
-              O backend identifica cancelamentos em PDFs com o formato
-              documental suportado e evita registrar duplicidades.
+              O backend identifica cancelamentos nos documentos PDF suportados e
+              evita registrar duplicidades.
             </p>
           </div>
 
           <button
             type="button"
-            disabled
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-200 px-5 py-3 text-sm font-semibold text-slate-500 disabled:cursor-not-allowed"
+            disabled={!arquivoPdf || importacaoEmAndamento}
+            onClick={() => void executarImportacao("pdf")}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#F27D70] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#D96A5E] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500"
           >
             <Upload size={18} />
-            Importar cancelamentos
+
+            {enviando === "pdf"
+              ? "Importando cancelamentos..."
+              : "Importar cancelamentos"}
           </button>
 
           <p className="mt-3 text-center text-xs text-slate-400">
-            Envio disponível após integração com a API.
+            O envio registra dados reais no PostgreSQL.
           </p>
+
+          {resultadoPdf && (
+            <div className="mt-6 space-y-3" role="status">
+              <p className="text-sm font-semibold text-green-700">
+                Importação PDF concluída com sucesso.
+              </p>
+
+              <ResultadoImportacao tipo="pdf" resultado={resultadoPdf} />
+            </div>
+          )}
         </article>
       </section>
 
-      {/* PRÉVIA DOS RESULTADOS */}
       <section className="rounded-2xl border border-slate-100 bg-white p-6">
         <h3 className="text-lg font-semibold">
           Pré-visualização dos resultados
         </h3>
 
         <p className="mt-2 text-sm text-slate-500">
-          Confira como os resultados serão apresentados após a integração com o
-          backend.
+          Exemplos demonstrativos para conhecer os indicadores exibidos após uma
+          importação.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-3">
@@ -356,6 +479,7 @@ function ImportarArquivos() {
             className="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-3 text-sm font-medium text-[#183B70] hover:bg-blue-100"
           >
             <Eye size={18} />
+
             {visualizacao === "csv"
               ? "Ocultar exemplo CSV"
               : "Exemplo de resultado CSV"}
@@ -368,6 +492,7 @@ function ImportarArquivos() {
             className="inline-flex items-center gap-2 rounded-lg bg-orange-50 px-4 py-3 text-sm font-medium text-[#183B70] hover:bg-orange-100"
           >
             <Eye size={18} />
+
             {visualizacao === "pdf"
               ? "Ocultar exemplo PDF"
               : "Exemplo de resultado PDF"}
@@ -376,10 +501,7 @@ function ImportarArquivos() {
 
         {visualizacao && (
           <div className="mt-5 space-y-4">
-            <div
-              role="status"
-              className="rounded-lg border border-amber-200 bg-amber-50 p-4"
-            >
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
               <p className="text-sm font-semibold text-amber-900">
                 Demonstração com dados fictícios
               </p>
@@ -417,7 +539,8 @@ function ImportarArquivos() {
       </section>
 
       <p className="text-xs text-slate-400">
-        Ambiente demonstrativo — arquivos ainda não são enviados ao servidor.
+        Integração de importações com o backend da ÁRIA. Utilize arquivos de
+        teste controlados durante a validação.
       </p>
     </div>
   );
