@@ -1,5 +1,7 @@
 import { CalendarDays, CalendarClock, Search, Eye } from "lucide-react";
+
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { listarCampanhasApi } from "../services/campanhaService";
 import type { CampanhaApi } from "../types/CampanhaApi";
@@ -18,8 +20,11 @@ function formatarData(data: string): string {
 
 function Campanhas() {
   const [pesquisa, setPesquisa] = useState("");
+
   const [campanhas, setCampanhas] = useState<CampanhaApi[]>([]);
+
   const [carregando, setCarregando] = useState(true);
+
   const [erro, setErro] = useState(false);
 
   useEffect(() => {
@@ -33,8 +38,8 @@ function Campanhas() {
           setCampanhas(dados);
           setErro(false);
         }
-      } catch (erro) {
-        console.error("Erro ao carregar campanhas:", erro);
+      } catch (erroConsulta) {
+        console.error("Erro ao carregar campanhas:", erroConsulta);
 
         if (ativo) {
           setErro(true);
@@ -219,13 +224,13 @@ function Campanhas() {
                     </td>
 
                     <td className="px-4 py-4">
-                      <span
-                        title="A tela de detalhes ainda será integrada ao backend."
-                        className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-slate-100 px-3 py-2 text-slate-500"
+                      <Link
+                        to={`/campanhas/${campanha.id}`}
+                        className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-50 px-3 py-2 font-medium text-[#183B70] transition-colors hover:bg-blue-100"
                       >
                         <Eye size={17} />
-                        Detalhes em integração
-                      </span>
+                        Ver detalhes
+                      </Link>
                     </td>
                   </tr>
                 ))}
