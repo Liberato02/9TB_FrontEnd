@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FileBarChart,
   Download,
@@ -14,8 +14,10 @@ import {
   Info,
 } from "lucide-react";
 
-import { campanhas } from "../data/campanhas";
-import { detalhesCampanhasMock } from "../data/detalhesCampanhasMock";
+import { campanhas as campanhasDemonstrativas } from "../data/campanhas";
+
+import { listarCampanhasApi } from "../services/campanhaService";
+import { buscarIndicadoresCampanhaApi } from "../services/detalhesCampanhaService";
 
 import {
   exportarWord,
@@ -29,92 +31,218 @@ import {
   exportarCancelamentosExcel,
 } from "../services/relatorioCancelamentosService";
 
+import type { CampanhaApi } from "../types/CampanhaApi";
+import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
+
 type TipoRelatorio = "cancelamentos" | "contatos";
 type FormatoExportacao = "word" | "pdf" | "excel";
 
-function Relatorios() {
-  const [campanhaId, setCampanhaId] = useState<number>(campanhas[0]?.id ?? 0);
+function formatarNumero(valor: number): string {
+  return valor.toLocaleString("pt-BR");
+}
 
+function formatarPercentual(valor: number): string {
+  return `${valor.toLocaleString("pt-BR", {
+    maximumFractionDigits: 2,
+  })}%`;
+}
+
+function Relatorios() {
   const [tipoRelatorio, setTipoRelatorio] =
     useState<TipoRelatorio>("cancelamentos");
+
+  const [campanhasReais, setCampanhasReais] = useState<CampanhaApi[]>([]);
+  const [campanhaRealId, setCampanhaRealId] = useState<number | null>(null);
+
+  const [campanhaDemoId, setCampanhaDemoId] = useState<number | null>(
+    campanhasDemonstrativas[0]?.id ?? null,
+  );
+
+  const [indicadoresReais, setIndicadoresReais] =
+    useState<IndicadoresCampanhaApi | null>(null);
+
+  const [carregandoCampanhas, setCarregandoCampanhas] = useState(true);
+  const [carregandoIndicadores, setCarregandoIndicadores] = useState(false);
+
+  const [erroCampanhas, setErroCampanhas] = useState(false);
+  const [erroIndicadores, setErroIndicadores] = useState(false);
 
   const [exportando, setExportando] = useState<FormatoExportacao | null>(null);
 
   const [erroExportacao, setErroExportacao] = useState("");
 
-  const campanhaSelecionada = campanhas.find(
-    (campanha) => campanha.id === campanhaId,
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarCampanhas() {
+      try {
+        const dados = await listarCampanhasApi();
+
+        if (!ativo) {
+          return;
+        }
+
+        setCampanhasReais(dados);
+        setCampanhaRealId(dados[0]?.id ?? null);
+        setErroCampanhas(false);
+      } catch (erro) {
+        console.error("Erro ao consultar campanhas:", erro);
+
+        if (ativo) {
+          setErroCampanhas(true);
+        }
+      } finally {
+        if (ativo) {
+          setCarregandoCampanhas(false);
+        }
+      }
+    }
+
+    void carregarCampanhas();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let ativo = true;
+
+    setIndicadoresReais(null);
+    setErroIndicadores(false);
+
+    if (campanhaRealId === null) {
+      setCarregandoIndicadores(false);
+      return;
+    }
+
+    setCarregandoIndicadores(true);
+
+    async function carregarIndicadores() {
+      try {
+        const dados = await buscarIndicadoresCampanhaApi(
+          campanhaRealId as number,
+        );
+
+        if (ativo) {
+          setIndicadoresReais(dados);
+          setErroIndicadores(false);
+        }
+      } catch (erro) {
+        console.error("Erro ao consultar indicadores:", erro);
+
+        if (ativo) {
+          setIndicadoresReais(null);
+          setErroIndicadores(true);
+        }
+      } finally {
+        if (ativo) {
+          setCarregandoIndicadores(false);
+        }
+      }
+    }
+
+    void carregarIndicadores();
+
+    return () => {
+      ativo = false;
+    };
+  }, [campanhaRealId]);
+
+  const campanhaRealSelecionada = campanhasReais.find(
+    (campanha) => campanha.id === campanhaRealId,
   );
 
-  const detalhes = detalhesCampanhasMock[campanhaId];
+  const campanhaDemoSelecionada = campanhasDemonstrativas.find(
+    (campanha) => campanha.id === campanhaDemoId,
+  );
 
-  const formatarNumero = (valor: number) => valor.toLocaleString("pt-BR");
+  const indicadoresValidos =
+    indicadoresReais !== null && indicadoresReais.campanhaId === campanhaRealId
+      ? indicadoresReais
+      : null;
 
-  const formatarPercentual = (valor: number) =>
-    `${valor.toLocaleString("pt-BR", {
-      maximumFractionDigits: 2,
-    })}%`;
+  const relatorioReal = tipoRelatorio === "cancelamentos";
 
-  const indicadoresCancelamentos = detalhes
+  const campanhaSelecionada = relatorioReal
+    ? campanhaRealSelecionada
+    : campanhaDemoSelecionada;
+
+  const carregandoDadosReais = carregandoCampanhas || carregandoIndicadores;
+
+  const podeExportar = relatorioReal
+    ? !!campanhaRealSelecionada &&
+      !!indicadoresValidos &&
+      !carregandoDadosReais &&
+      !erroCampanhas &&
+      !erroIndicadores
+    : !!campanhaDemoSelecionada;
+
+  const indicadoresCancelamentos = indicadoresValidos
     ? [
         {
           titulo: "Total de títulos",
-          valor: formatarNumero(detalhes.indicadores.totalTitulos),
+          valor: formatarNumero(indicadoresValidos.totalTitulos),
           icone: FileText,
         },
         {
           titulo: "Cancelamentos encontrados",
-          valor: formatarNumero(detalhes.indicadores.titulosCancelados),
+          valor: formatarNumero(indicadoresValidos.titulosCancelados),
           icone: CheckCircle2,
         },
         {
           titulo: "Não encontrados nos PDFs",
-          valor: formatarNumero(detalhes.indicadores.naoEncontradosNosPdfs),
+          valor: formatarNumero(indicadoresValidos.naoEncontradosNosPdfs),
           icone: FileQuestion,
         },
         {
           titulo: "Percentual encontrado",
-          valor: formatarPercentual(detalhes.indicadores.percentualCancelados),
+          valor: formatarPercentual(indicadoresValidos.percentualCancelados),
           icone: Percent,
         },
       ]
     : [];
 
-  const indicadoresContatos = campanhaSelecionada
+  const indicadoresContatos = campanhaDemoSelecionada
     ? [
         {
           titulo: "Devedores",
-          valor: formatarNumero(campanhaSelecionada.devedores),
+          valor: formatarNumero(campanhaDemoSelecionada.devedores),
           icone: Users,
         },
         {
           titulo: "Análises realizadas",
-          valor: formatarNumero(campanhaSelecionada.analises),
+          valor: formatarNumero(campanhaDemoSelecionada.analises),
           icone: ChartNoAxesCombined,
         },
         {
           titulo: "Contatos efetivos",
-          valor: formatarNumero(campanhaSelecionada.contatosEfetivos),
+          valor: formatarNumero(campanhaDemoSelecionada.contatosEfetivos),
           icone: PhoneCall,
         },
         {
           titulo: "Retornos agendados",
-          valor: formatarNumero(campanhaSelecionada.retornosAgendados),
+          valor: formatarNumero(campanhaDemoSelecionada.retornosAgendados),
           icone: Clock3,
         },
       ]
     : [];
 
-  const indicadoresExibidos =
-    tipoRelatorio === "cancelamentos"
-      ? indicadoresCancelamentos
-      : indicadoresContatos;
+  const indicadoresExibidos = relatorioReal
+    ? indicadoresCancelamentos
+    : indicadoresContatos;
 
-  const podeExportar =
-    !!campanhaSelecionada && (tipoRelatorio === "contatos" || !!detalhes);
+  function selecionarTipo(tipo: TipoRelatorio) {
+    if (exportando !== null) {
+      return;
+    }
+
+    setTipoRelatorio(tipo);
+    setErroExportacao("");
+  }
 
   async function baixarRelatorio(formato: FormatoExportacao) {
-    if (!campanhaSelecionada || !podeExportar || exportando) {
+    if (!podeExportar || exportando !== null) {
       return;
     }
 
@@ -122,12 +250,14 @@ function Relatorios() {
     setExportando(formato);
 
     try {
-      if (tipoRelatorio === "cancelamentos") {
-        if (!detalhes) return;
+      if (relatorioReal) {
+        if (!campanhaRealSelecionada || !indicadoresValidos) {
+          return;
+        }
 
         const dados = {
-          campanha: campanhaSelecionada,
-          indicadores: detalhes.indicadores,
+          campanha: campanhaRealSelecionada,
+          indicadores: indicadoresValidos,
         };
 
         if (formato === "word") {
@@ -138,12 +268,16 @@ function Relatorios() {
           await exportarCancelamentosExcel(dados);
         }
       } else {
+        if (!campanhaDemoSelecionada) {
+          return;
+        }
+
         if (formato === "word") {
-          await exportarWord(campanhaSelecionada);
+          await exportarWord(campanhaDemoSelecionada);
         } else if (formato === "pdf") {
-          await exportarPDF(campanhaSelecionada);
+          await exportarPDF(campanhaDemoSelecionada);
         } else {
-          await exportarExcel(campanhaSelecionada);
+          await exportarExcel(campanhaDemoSelecionada);
         }
       }
     } catch (erro) {
@@ -168,7 +302,6 @@ function Relatorios() {
         </p>
       </header>
 
-      {/* TIPO DE RELATÓRIO */}
       <section className="rounded-xl border border-slate-100 bg-white p-5">
         <h3 className="text-lg font-semibold">Tipo de relatório</h3>
 
@@ -179,13 +312,11 @@ function Relatorios() {
         <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
           <button
             type="button"
-            onClick={() => {
-              setTipoRelatorio("cancelamentos");
-              setErroExportacao("");
-            }}
-            aria-pressed={tipoRelatorio === "cancelamentos"}
-            className={`rounded-xl border p-4 text-left transition-colors ${
-              tipoRelatorio === "cancelamentos"
+            disabled={exportando !== null}
+            onClick={() => selecionarTipo("cancelamentos")}
+            aria-pressed={relatorioReal}
+            className={`rounded-xl border p-4 text-left transition-colors disabled:cursor-not-allowed ${
+              relatorioReal
                 ? "border-[#3F7DD9] bg-blue-50"
                 : "border-slate-200 bg-white hover:bg-slate-50"
             }`}
@@ -195,20 +326,18 @@ function Relatorios() {
             <p className="mt-3 font-semibold">Títulos e Cancelamentos</p>
 
             <p className="mt-1 text-sm text-slate-500">
-              Indicadores de títulos associados às campanhas e cancelamentos
-              encontrados nos PDFs.
+              Dados reais das campanhas e cancelamentos encontrados nos PDFs
+              importados.
             </p>
           </button>
 
           <button
             type="button"
-            onClick={() => {
-              setTipoRelatorio("contatos");
-              setErroExportacao("");
-            }}
-            aria-pressed={tipoRelatorio === "contatos"}
-            className={`rounded-xl border p-4 text-left transition-colors ${
-              tipoRelatorio === "contatos"
+            disabled={exportando !== null}
+            onClick={() => selecionarTipo("contatos")}
+            aria-pressed={!relatorioReal}
+            className={`rounded-xl border p-4 text-left transition-colors disabled:cursor-not-allowed ${
+              !relatorioReal
                 ? "border-[#3F7DD9] bg-blue-50"
                 : "border-slate-200 bg-white hover:bg-slate-50"
             }`}
@@ -225,38 +354,76 @@ function Relatorios() {
         </div>
       </section>
 
-      {/* SELEÇÃO DA CAMPANHA */}
       <section className="rounded-xl border border-slate-100 bg-white p-5">
         <label htmlFor="campanha-relatorio" className="text-lg font-semibold">
           Selecionar campanha
         </label>
 
         <p className="mt-1 text-sm text-slate-500">
-          Escolha a campanha para consultar seus resultados.
+          {relatorioReal
+            ? "Escolha uma campanha cadastrada no backend da ÁRIA."
+            : "Escolha uma campanha demonstrativa de contatos."}
         </p>
 
         <select
           id="campanha-relatorio"
-          value={campanhaId}
+          value={
+            relatorioReal ? (campanhaRealId ?? "") : (campanhaDemoId ?? "")
+          }
           onChange={(evento) => {
-            setCampanhaId(Number(evento.target.value));
+            const id = Number(evento.target.value);
+
+            if (relatorioReal) {
+              setCampanhaRealId(id);
+            } else {
+              setCampanhaDemoId(id);
+            }
+
             setErroExportacao("");
           }}
-          className="mt-4 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-[#183B70] outline-none focus:border-[#3F7DD9]"
+          disabled={
+            exportando !== null ||
+            (relatorioReal && (carregandoCampanhas || erroCampanhas)) ||
+            (relatorioReal
+              ? campanhasReais.length === 0
+              : campanhasDemonstrativas.length === 0)
+          }
+          className="mt-4 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-[#183B70] outline-none focus:border-[#3F7DD9] disabled:bg-slate-50 disabled:text-slate-400"
         >
-          {campanhas.length === 0 && (
-            <option value={0}>Nenhuma campanha disponível</option>
-          )}
+          {relatorioReal ? (
+            <>
+              {campanhasReais.length === 0 && (
+                <option value="">
+                  {carregandoCampanhas
+                    ? "Carregando campanhas..."
+                    : "Nenhuma campanha disponível"}
+                </option>
+              )}
 
-          {campanhas.map((campanha) => (
-            <option key={campanha.id} value={campanha.id}>
-              {campanha.nome}
-            </option>
-          ))}
+              {campanhasReais.map((campanha) => (
+                <option key={campanha.id} value={campanha.id}>
+                  {campanha.nome}
+                </option>
+              ))}
+            </>
+          ) : (
+            <>
+              {campanhasDemonstrativas.length === 0 && (
+                <option value="">
+                  Nenhuma campanha demonstrativa disponível
+                </option>
+              )}
+
+              {campanhasDemonstrativas.map((campanha) => (
+                <option key={campanha.id} value={campanha.id}>
+                  {campanha.nome}
+                </option>
+              ))}
+            </>
+          )}
         </select>
       </section>
 
-      {/* INDICADORES */}
       <section className="space-y-4">
         <div>
           <h3 className="text-xl font-semibold">Resultados da campanha</h3>
@@ -266,7 +433,36 @@ function Relatorios() {
           </p>
         </div>
 
-        {indicadoresExibidos.length > 0 ? (
+        {relatorioReal && carregandoDadosReais ? (
+          <div
+            role="status"
+            aria-busy="true"
+            className="rounded-xl border border-slate-100 bg-white p-5"
+          >
+            <p className="text-sm text-slate-500">
+              Carregando indicadores reais...
+            </p>
+          </div>
+        ) : relatorioReal && erroCampanhas ? (
+          <div
+            role="alert"
+            className="rounded-xl border border-red-100 bg-red-50 p-5"
+          >
+            <p className="text-sm text-red-700">
+              Não foi possível consultar as campanhas. Verifique a conexão com o
+              backend.
+            </p>
+          </div>
+        ) : relatorioReal && erroIndicadores ? (
+          <div
+            role="alert"
+            className="rounded-xl border border-amber-100 bg-amber-50 p-5"
+          >
+            <p className="text-sm text-amber-800">
+              Não foi possível consultar os indicadores da campanha selecionada.
+            </p>
+          </div>
+        ) : indicadoresExibidos.length > 0 ? (
           <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             {indicadoresExibidos.map((indicador) => {
               const Icone = indicador.icone;
@@ -296,9 +492,14 @@ function Relatorios() {
             </p>
           </div>
         )}
+
+        {!relatorioReal && (
+          <p className="text-sm text-amber-700">
+            Estes indicadores são fictícios e servem apenas para demonstração.
+          </p>
+        )}
       </section>
 
-      {/* EXPORTAÇÃO */}
       <section className="rounded-xl border border-slate-100 bg-white p-5">
         <div className="flex items-center gap-3">
           <FileBarChart size={23} className="text-[#3F7DD9]" />
@@ -307,7 +508,9 @@ function Relatorios() {
         </div>
 
         <p className="mt-2 text-sm text-slate-500">
-          Baixe o relatório selecionado no formato desejado.
+          {relatorioReal
+            ? "Exporte os indicadores reais da campanha selecionada."
+            : "Exporte um relatório demonstrativo de contatos."}
         </p>
 
         <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -355,7 +558,6 @@ function Relatorios() {
         )}
       </section>
 
-      {/* INFORMAÇÕES IMPORTANTES */}
       <section className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
         <Info size={20} className="mt-0.5 shrink-0 text-[#3F7DD9]" />
 
@@ -363,15 +565,17 @@ function Relatorios() {
           <h3 className="text-sm font-semibold">Sobre os dados apresentados</h3>
 
           <p className="mt-2 text-sm text-slate-600">
-            {tipoRelatorio === "cancelamentos"
+            {relatorioReal
               ? "Os cancelamentos encontrados não comprovam que foram causados pela campanha. A ausência de correspondência nos PDFs também não comprova que o título continua ativo ou não foi pago."
-              : "Os indicadores de contatos e atendimentos são demonstrativos e não representam, por si só, pagamentos ou valores arrecadados."}
+              : "Os relatórios de contatos e atendimentos utilizam dados fictícios. Seus indicadores não representam pagamentos ou valores efetivamente arrecadados."}
           </p>
         </div>
       </section>
 
       <p className="text-sm text-slate-400">
-        Ambiente demonstrativo — relatórios com dados fictícios.
+        {relatorioReal
+          ? "Indicadores consultados no backend da ÁRIA."
+          : "Ambiente demonstrativo — relatórios com dados fictícios."}
       </p>
     </div>
   );
