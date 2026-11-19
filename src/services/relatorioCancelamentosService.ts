@@ -435,6 +435,7 @@ export async function exportarCancelamentosPDF({
   pdf.save(`${nomeArquivo(campanha)}.pdf`);
 }
 
+
 export async function exportarCancelamentosExcel({
   campanha,
   indicadores,
@@ -460,6 +461,44 @@ export async function exportarCancelamentosExcel({
 
   planilha.getColumn("percentual").numFmt = "0.00%";
 
+  // Identificação da origem dos indicadores
+  planilha.addRow([]);
+  planilha.mergeCells("A4:E4");
+
+  const fonte = planilha.getCell("A4");
+  fonte.value =
+    "Fonte: ÁRIA — indicadores de títulos e cancelamentos.";
+  fonte.font = {
+    bold: true,
+    color: { argb: "FF183B70" },
+  };
+
+  // Aviso interpretativo
+  planilha.mergeCells("A6:E6");
+
+  const celulaAviso = planilha.getCell("A6");
+
+  celulaAviso.value = aviso;
+
+  celulaAviso.alignment = {
+    vertical: "middle",
+    horizontal: "left",
+    wrapText: true,
+  };
+
+  celulaAviso.font = {
+    size: 11,
+    color: { argb: "FF92400E" },
+  };
+
+  celulaAviso.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFFFF7ED" },
+  };
+
+  planilha.getRow(6).height = 45;
+
   const buffer = await workbook.xlsx.writeBuffer();
 
   const arquivo = new Blob([buffer as BlobPart], {
@@ -471,3 +510,4 @@ export async function exportarCancelamentosExcel({
     `${nomeArquivo(campanha)}.xlsx`,
   );
 }
+
