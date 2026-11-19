@@ -11,126 +11,220 @@ import {
 } from "lucide-react";
 
 import { listarAnalises } from "../services/analiseService";
+import { listarCampanhasApi } from "../services/campanhaService";
+import { buscarIndicadoresCampanhaApi } from "../services/detalhesCampanhaService";
+
 import {
   calcularIndicadores,
   type IndicadoresAnalises,
 } from "../services/indicadorService";
 
-import { campanhas } from "../data/campanhas";
-import { detalhesCampanhasMock } from "../data/detalhesCampanhasMock";
+import type { CampanhaApi } from "../types/CampanhaApi";
+import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
 
 import IndicadoresCancelamentos from "../components/analises/IndicadoresCancelamentos";
 import GraficoContatos from "../components/charts/GraficoContatos";
 import GraficoResultados from "../components/charts/GraficoResultados";
 
+function formatarNumero(valor: number): string {
+  return valor.toLocaleString("pt-BR");
+}
+
 function Analises() {
-  const [campanhaId, setCampanhaId] = useState<number>(campanhas[0]?.id ?? 0);
+  const [campanhas, setCampanhas] = useState<CampanhaApi[]>([]);
+  const [campanhaId, setCampanhaId] = useState<number | null>(null);
 
-  const [indicadores, setIndicadores] = useState<IndicadoresAnalises | null>(
-    null,
-  );
+  const [indicadoresCancelamentos, setIndicadoresCancelamentos] =
+    useState<IndicadoresCampanhaApi | null>(null);
 
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState(false);
+  const [carregandoCampanhas, setCarregandoCampanhas] = useState(true);
+  const [carregandoCancelamentos, setCarregandoCancelamentos] = useState(false);
+
+  const [erroCampanhas, setErroCampanhas] = useState(false);
+  const [erroCancelamentos, setErroCancelamentos] = useState(false);
+
+  const [indicadoresContatos, setIndicadoresContatos] =
+    useState<IndicadoresAnalises | null>(null);
+
+  const [carregandoContatos, setCarregandoContatos] = useState(true);
+  const [erroContatos, setErroContatos] = useState(false);
 
   useEffect(() => {
     let ativo = true;
 
-    async function carregarIndicadores() {
+    async function carregarCampanhas() {
       try {
-        const analises = await listarAnalises();
-        const resultado = calcularIndicadores(analises);
+        const dados = await listarCampanhasApi();
 
-        if (ativo) {
-          setIndicadores(resultado);
-          setErro(false);
+        if (!ativo) {
+          return;
         }
-      } catch (erro) {
-        console.error("Erro ao carregar indicadores:", erro);
+
+        setCampanhas(dados);
+        setCampanhaId(dados[0]?.id ?? null);
+        setErroCampanhas(false);
+      } catch (erroConsulta) {
+        console.error("Erro ao carregar campanhas:", erroConsulta);
 
         if (ativo) {
-          setErro(true);
+          setErroCampanhas(true);
         }
       } finally {
         if (ativo) {
-          setCarregando(false);
+          setCarregandoCampanhas(false);
         }
       }
     }
 
-    carregarIndicadores();
+    void carregarCampanhas();
 
     return () => {
       ativo = false;
     };
   }, []);
 
-  const formatarNumero = (valor: number) => valor.toLocaleString("pt-BR");
+  useEffect(() => {
+    let ativo = true;
+
+    setIndicadoresCancelamentos(null);
+    setErroCancelamentos(false);
+
+    if (campanhaId === null) {
+      setCarregandoCancelamentos(false);
+      return;
+    }
+
+    setCarregandoCancelamentos(true);
+
+    async function carregarCancelamentos() {
+      try {
+        const dados = await buscarIndicadoresCampanhaApi(campanhaId as number);
+
+        if (ativo) {
+          setIndicadoresCancelamentos(dados);
+          setErroCancelamentos(false);
+        }
+      } catch (erroConsulta) {
+        console.error(
+          "Erro ao carregar indicadores de cancelamentos:",
+          erroConsulta,
+        );
+
+        if (ativo) {
+          setIndicadoresCancelamentos(null);
+          setErroCancelamentos(true);
+        }
+      } finally {
+        if (ativo) {
+          setCarregandoCancelamentos(false);
+        }
+      }
+    }
+
+    void carregarCancelamentos();
+
+    return () => {
+      ativo = false;
+    };
+  }, [campanhaId]);
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarContatos() {
+      try {
+        const analises = await listarAnalises();
+        const resultado = calcularIndicadores(analises);
+
+        if (ativo) {
+          setIndicadoresContatos(resultado);
+          setErroContatos(false);
+        }
+      } catch (erroConsulta) {
+        console.error(
+          "Erro ao carregar indicadores demonstrativos:",
+          erroConsulta,
+        );
+
+        if (ativo) {
+          setErroContatos(true);
+        }
+      } finally {
+        if (ativo) {
+          setCarregandoContatos(false);
+        }
+      }
+    }
+
+    void carregarContatos();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   const campanhaSelecionada = campanhas.find(
     (campanha) => campanha.id === campanhaId,
   );
 
-  const detalhes = detalhesCampanhasMock[campanhaId];
-
-  const cards = indicadores
+  const cardsContatos = indicadoresContatos
     ? [
         {
           titulo: "Análises realizadas",
-          valor: indicadores.totalAnalises,
+          valor: indicadoresContatos.totalAnalises,
           icone: BarChart3,
           cor: "text-[#3F7DD9]",
         },
         {
           titulo: "Contatos realizados",
-          valor: indicadores.contatosRealizados,
+          valor: indicadoresContatos.contatosRealizados,
           icone: PhoneCall,
           cor: "text-green-600",
         },
         {
           titulo: "Contatos fracassados",
-          valor: indicadores.contatosFracassados,
+          valor: indicadoresContatos.contatosFracassados,
           icone: PhoneOff,
           cor: "text-[#F27D70]",
         },
         {
           titulo: "Interesse imediato",
-          valor: indicadores.interesseImediato,
+          valor: indicadoresContatos.interesseImediato,
           icone: TrendingUp,
           cor: "text-[#3F7DD9]",
         },
         {
           titulo: "Interesse futuro",
-          valor: indicadores.interesseFuturo,
+          valor: indicadoresContatos.interesseFuturo,
           icone: TrendingUp,
           cor: "text-[#F27D70]",
         },
         {
           titulo: "Atendimentos agendados",
-          valor: indicadores.atendimentosAgendados,
+          valor: indicadoresContatos.atendimentosAgendados,
           icone: CalendarCheck,
           cor: "text-[#183B70]",
         },
       ]
     : [];
 
-  const resultados = indicadores
+  const resultadosContatos = indicadoresContatos
     ? [
         {
           titulo: "Sem interesse em pagar",
-          valor: indicadores.semInteresse,
+          valor: indicadoresContatos.semInteresse,
         },
         {
           titulo: "Telefones incorretos",
-          valor: indicadores.telefonesIncorretos,
+          valor: indicadoresContatos.telefonesIncorretos,
         },
         {
           titulo: "Boletos por e-mail",
-          valor: indicadores.boletosEmail,
+          valor: indicadoresContatos.boletosEmail,
         },
         {
           titulo: "Boletos por WhatsApp",
-          valor: indicadores.boletosWhatsApp,
+          valor: indicadoresContatos.boletosWhatsApp,
         },
       ]
     : [];
@@ -147,24 +241,34 @@ function Analises() {
         </p>
       </header>
 
-      {/* TÍTULOS E CANCELAMENTOS */}
       <section className="space-y-4">
         <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
           <div>
             <h3 className="text-xl font-semibold">Títulos e Cancelamentos</h3>
 
             <p className="mt-1 text-sm text-slate-500">
-              Indicadores de cancelamentos encontrados nos documentos
+              Indicadores reais de cancelamentos encontrados nos documentos
               importados.
             </p>
           </div>
 
           <select
-            value={campanhaId}
+            value={campanhaId ?? ""}
             onChange={(evento) => setCampanhaId(Number(evento.target.value))}
             aria-label="Selecionar campanha"
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#3F7DD9] lg:w-64"
+            disabled={
+              carregandoCampanhas || erroCampanhas || campanhas.length === 0
+            }
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#3F7DD9] disabled:bg-slate-50 disabled:text-slate-400 lg:w-64"
           >
+            {campanhas.length === 0 && (
+              <option value="">
+                {carregandoCampanhas
+                  ? "Carregando campanhas..."
+                  : "Nenhuma campanha disponível"}
+              </option>
+            )}
+
             {campanhas.map((campanha) => (
               <option key={campanha.id} value={campanha.id}>
                 {campanha.nome}
@@ -173,9 +277,45 @@ function Analises() {
           </select>
         </div>
 
-        {detalhes ? (
+        {carregandoCampanhas || carregandoCancelamentos ? (
+          <div
+            role="status"
+            aria-busy="true"
+            className="rounded-xl border border-slate-100 bg-white p-6"
+          >
+            <p className="text-sm text-slate-500">
+              Carregando indicadores de cancelamentos...
+            </p>
+          </div>
+        ) : erroCampanhas ? (
+          <div
+            role="alert"
+            className="rounded-xl border border-red-100 bg-red-50 p-5"
+          >
+            <p className="text-sm text-red-700">
+              Não foi possível consultar as campanhas. Verifique a conexão com o
+              backend.
+            </p>
+          </div>
+        ) : campanhas.length === 0 ? (
+          <div className="rounded-xl border border-slate-100 bg-white p-6">
+            <p className="text-sm text-slate-500">
+              Nenhuma campanha cadastrada no sistema.
+            </p>
+          </div>
+        ) : erroCancelamentos ? (
+          <div
+            role="alert"
+            className="rounded-xl border border-amber-100 bg-amber-50 p-5"
+          >
+            <p className="text-sm text-amber-800">
+              Não foi possível carregar os indicadores desta campanha. Verifique
+              a conexão com o backend.
+            </p>
+          </div>
+        ) : indicadoresCancelamentos ? (
           <>
-            <IndicadoresCancelamentos indicadores={detalhes.indicadores} />
+            <IndicadoresCancelamentos indicadores={indicadoresCancelamentos} />
 
             <div className="flex flex-col justify-between gap-3 rounded-xl border border-slate-100 bg-white p-4 sm:flex-row sm:items-center">
               <div>
@@ -184,23 +324,25 @@ function Analises() {
                 </p>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Dados fictícios para demonstração.
+                  Indicadores consultados no backend da ÁRIA.
                 </p>
               </div>
 
-              <Link
-                to={`/campanhas/${campanhaId}`}
-                className="inline-flex items-center gap-2 text-sm font-medium text-[#3F7DD9] hover:underline"
-              >
-                Ver títulos da campanha
-                <ArrowRight size={17} />
-              </Link>
+              {campanhaSelecionada && (
+                <Link
+                  to={`/campanhas/${campanhaSelecionada.id}`}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-[#3F7DD9] hover:underline"
+                >
+                  Ver títulos da campanha
+                  <ArrowRight size={17} />
+                </Link>
+              )}
             </div>
           </>
         ) : (
           <div className="rounded-xl border border-slate-100 bg-white p-6">
             <p className="text-sm text-slate-500">
-              Não há indicadores demonstrativos disponíveis para esta campanha.
+              Nenhum indicador disponível para esta campanha.
             </p>
           </div>
         )}
@@ -216,37 +358,42 @@ function Analises() {
         </div>
       </section>
 
-      {/* ANÁLISES DE CONTATOS */}
       <section className="space-y-4">
         <div>
           <h3 className="text-xl font-semibold">Análises de Contatos</h3>
 
           <p className="mt-1 text-sm text-slate-500">
             Indicadores demonstrativos de contatos e atendimentos, ainda sem
-            integração confirmada com o backend.
+            integração com o backend.
           </p>
         </div>
 
-        {carregando && (
-          <div className="rounded-xl border border-slate-100 bg-white p-5">
+        {carregandoContatos && (
+          <div
+            role="status"
+            className="rounded-xl border border-slate-100 bg-white p-5"
+          >
             <p className="text-base text-slate-500">
-              Carregando indicadores...
+              Carregando indicadores demonstrativos...
             </p>
           </div>
         )}
 
-        {!carregando && erro && (
-          <div className="rounded-xl border border-red-100 bg-red-50 p-4">
+        {!carregandoContatos && erroContatos && (
+          <div
+            role="alert"
+            className="rounded-xl border border-red-100 bg-red-50 p-4"
+          >
             <p className="text-base text-red-600">
-              Não foi possível carregar os indicadores.
+              Não foi possível carregar os indicadores demonstrativos.
             </p>
           </div>
         )}
 
-        {!carregando && !erro && indicadores && (
+        {!carregandoContatos && !erroContatos && indicadoresContatos && (
           <>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-              {cards.map((card) => {
+              {cardsContatos.map((card) => {
                 const Icone = card.icone;
 
                 return (
@@ -273,8 +420,12 @@ function Analises() {
                 Classificação dos resultados
               </h4>
 
+              <p className="mt-1 text-sm text-slate-500">
+                Dados demonstrativos de contatos.
+              </p>
+
               <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
-                {resultados.map((resultado) => (
+                {resultadosContatos.map((resultado) => (
                   <div
                     key={resultado.titulo}
                     className="min-w-0 rounded-lg bg-slate-50 p-3"
@@ -296,15 +447,17 @@ function Analises() {
                 </h4>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Classificação dos resultados registrados.
+                  Classificação demonstrativa dos resultados.
                 </p>
 
                 <div className="mt-3 min-w-0">
                   <GraficoResultados
-                    interesseImediato={indicadores.interesseImediato}
-                    interesseFuturo={indicadores.interesseFuturo}
-                    semInteresse={indicadores.semInteresse}
-                    telefonesIncorretos={indicadores.telefonesIncorretos}
+                    interesseImediato={indicadoresContatos.interesseImediato}
+                    interesseFuturo={indicadoresContatos.interesseFuturo}
+                    semInteresse={indicadoresContatos.semInteresse}
+                    telefonesIncorretos={
+                      indicadoresContatos.telefonesIncorretos
+                    }
                   />
                 </div>
               </article>
@@ -315,13 +468,13 @@ function Analises() {
                 </h4>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  Contatos realizados e fracassados.
+                  Contatos demonstrativos realizados e fracassados.
                 </p>
 
                 <div className="mt-3 min-w-0">
                   <GraficoContatos
-                    realizados={indicadores.contatosRealizados}
-                    fracassados={indicadores.contatosFracassados}
+                    realizados={indicadoresContatos.contatosRealizados}
+                    fracassados={indicadoresContatos.contatosFracassados}
                   />
                 </div>
               </article>
@@ -331,7 +484,8 @@ function Analises() {
       </section>
 
       <p className="text-sm text-slate-400">
-        Ambiente demonstrativo — dados fictícios.
+        Títulos e cancelamentos consultados no backend da ÁRIA. Indicadores e
+        gráficos de contatos permanecem demonstrativos.
       </p>
     </div>
   );
