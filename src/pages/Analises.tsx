@@ -26,6 +26,12 @@ import IndicadoresCancelamentos from "../components/analises/IndicadoresCancelam
 import GraficoContatos from "../components/charts/GraficoContatos";
 import GraficoResultados from "../components/charts/GraficoResultados";
 
+type ResultadoConsultaCancelamentos = {
+  campanhaId: number;
+  indicadores: IndicadoresCampanhaApi | null;
+  erro: boolean;
+};
+
 function formatarNumero(valor: number): string {
   return valor.toLocaleString("pt-BR");
 }
@@ -34,14 +40,11 @@ function Analises() {
   const [campanhas, setCampanhas] = useState<CampanhaApi[]>([]);
   const [campanhaId, setCampanhaId] = useState<number | null>(null);
 
-  const [indicadoresCancelamentos, setIndicadoresCancelamentos] =
-    useState<IndicadoresCampanhaApi | null>(null);
+  const [resultadoCancelamentos, setResultadoCancelamentos] =
+    useState<ResultadoConsultaCancelamentos | null>(null);
 
   const [carregandoCampanhas, setCarregandoCampanhas] = useState(true);
-  const [carregandoCancelamentos, setCarregandoCancelamentos] = useState(false);
-
   const [erroCampanhas, setErroCampanhas] = useState(false);
-  const [erroCancelamentos, setErroCancelamentos] = useState(false);
 
   const [indicadoresContatos, setIndicadoresContatos] =
     useState<IndicadoresAnalises | null>(null);
@@ -84,25 +87,23 @@ function Analises() {
   }, []);
 
   useEffect(() => {
-    let ativo = true;
-
-    setIndicadoresCancelamentos(null);
-    setErroCancelamentos(false);
-
     if (campanhaId === null) {
-      setCarregandoCancelamentos(false);
       return;
     }
 
-    setCarregandoCancelamentos(true);
+    const id = campanhaId;
+    let ativo = true;
 
     async function carregarCancelamentos() {
       try {
-        const dados = await buscarIndicadoresCampanhaApi(campanhaId as number);
+        const dados = await buscarIndicadoresCampanhaApi(id);
 
         if (ativo) {
-          setIndicadoresCancelamentos(dados);
-          setErroCancelamentos(false);
+          setResultadoCancelamentos({
+            campanhaId: id,
+            indicadores: dados,
+            erro: false,
+          });
         }
       } catch (erroConsulta) {
         console.error(
@@ -111,12 +112,11 @@ function Analises() {
         );
 
         if (ativo) {
-          setIndicadoresCancelamentos(null);
-          setErroCancelamentos(true);
-        }
-      } finally {
-        if (ativo) {
-          setCarregandoCancelamentos(false);
+          setResultadoCancelamentos({
+            campanhaId: id,
+            indicadores: null,
+            erro: true,
+          });
         }
       }
     }
@@ -166,6 +166,23 @@ function Analises() {
   const campanhaSelecionada = campanhas.find(
     (campanha) => campanha.id === campanhaId,
   );
+
+  const resultadoAtual =
+    resultadoCancelamentos?.campanhaId === campanhaId
+      ? resultadoCancelamentos
+      : null;
+
+  const indicadoresCancelamentos = resultadoAtual?.indicadores ?? null;
+
+  const erroCancelamentos = resultadoAtual?.erro ?? false;
+
+  const carregandoCancelamentos =
+    campanhaId !== null && resultadoAtual === null;
+
+  function selecionarCampanha(id: number) {
+    setCampanhaId(id);
+    setResultadoCancelamentos(null);
+  }
 
   const cardsContatos = indicadoresContatos
     ? [
@@ -254,7 +271,9 @@ function Analises() {
 
           <select
             value={campanhaId ?? ""}
-            onChange={(evento) => setCampanhaId(Number(evento.target.value))}
+            onChange={(evento) =>
+              selecionarCampanha(Number(evento.target.value))
+            }
             aria-label="Selecionar campanha"
             disabled={
               carregandoCampanhas || erroCampanhas || campanhas.length === 0

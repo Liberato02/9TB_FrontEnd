@@ -37,6 +37,12 @@ import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
 type TipoRelatorio = "cancelamentos" | "contatos";
 type FormatoExportacao = "word" | "pdf" | "excel";
 
+type ResultadoConsultaIndicadores = {
+  campanhaId: number;
+  indicadores: IndicadoresCampanhaApi | null;
+  erro: boolean;
+};
+
 function formatarNumero(valor: number): string {
   return valor.toLocaleString("pt-BR");
 }
@@ -58,17 +64,13 @@ function Relatorios() {
     campanhasDemonstrativas[0]?.id ?? null,
   );
 
-  const [indicadoresReais, setIndicadoresReais] =
-    useState<IndicadoresCampanhaApi | null>(null);
+  const [resultadoIndicadores, setResultadoIndicadores] =
+    useState<ResultadoConsultaIndicadores | null>(null);
 
   const [carregandoCampanhas, setCarregandoCampanhas] = useState(true);
-  const [carregandoIndicadores, setCarregandoIndicadores] = useState(false);
-
   const [erroCampanhas, setErroCampanhas] = useState(false);
-  const [erroIndicadores, setErroIndicadores] = useState(false);
 
   const [exportando, setExportando] = useState<FormatoExportacao | null>(null);
-
   const [erroExportacao, setErroExportacao] = useState("");
 
   useEffect(() => {
@@ -106,38 +108,33 @@ function Relatorios() {
   }, []);
 
   useEffect(() => {
-    let ativo = true;
-
-    setIndicadoresReais(null);
-    setErroIndicadores(false);
-
     if (campanhaRealId === null) {
-      setCarregandoIndicadores(false);
       return;
     }
 
-    setCarregandoIndicadores(true);
+    const id = campanhaRealId;
+    let ativo = true;
 
     async function carregarIndicadores() {
       try {
-        const dados = await buscarIndicadoresCampanhaApi(
-          campanhaRealId as number,
-        );
+        const dados = await buscarIndicadoresCampanhaApi(id);
 
         if (ativo) {
-          setIndicadoresReais(dados);
-          setErroIndicadores(false);
+          setResultadoIndicadores({
+            campanhaId: id,
+            indicadores: dados,
+            erro: false,
+          });
         }
       } catch (erro) {
         console.error("Erro ao consultar indicadores:", erro);
 
         if (ativo) {
-          setIndicadoresReais(null);
-          setErroIndicadores(true);
-        }
-      } finally {
-        if (ativo) {
-          setCarregandoIndicadores(false);
+          setResultadoIndicadores({
+            campanhaId: id,
+            indicadores: null,
+            erro: true,
+          });
         }
       }
     }
@@ -156,6 +153,17 @@ function Relatorios() {
   const campanhaDemoSelecionada = campanhasDemonstrativas.find(
     (campanha) => campanha.id === campanhaDemoId,
   );
+
+  const resultadoAtual =
+    resultadoIndicadores?.campanhaId === campanhaRealId
+      ? resultadoIndicadores
+      : null;
+
+  const indicadoresReais = resultadoAtual?.indicadores ?? null;
+  const erroIndicadores = resultadoAtual?.erro ?? false;
+
+  const carregandoIndicadores =
+    campanhaRealId !== null && resultadoAtual === null;
 
   const indicadoresValidos =
     indicadoresReais !== null && indicadoresReais.campanhaId === campanhaRealId
@@ -238,6 +246,12 @@ function Relatorios() {
     }
 
     setTipoRelatorio(tipo);
+    setErroExportacao("");
+  }
+
+  function selecionarCampanha(id: number) {
+    setCampanhaRealId(id);
+    setResultadoIndicadores(null);
     setErroExportacao("");
   }
 
@@ -374,12 +388,11 @@ function Relatorios() {
             const id = Number(evento.target.value);
 
             if (relatorioReal) {
-              setCampanhaRealId(id);
+              selecionarCampanha(id);
             } else {
               setCampanhaDemoId(id);
+              setErroExportacao("");
             }
-
-            setErroExportacao("");
           }}
           disabled={
             exportando !== null ||
