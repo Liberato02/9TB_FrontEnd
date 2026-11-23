@@ -799,11 +799,8 @@ export async function exportarPDF(campanha: Campanha) {
 
 export async function exportarExcel(campanha: Campanha) {
   const workbook = new ExcelJS.Workbook();
-
-  // Uma única aba, sem cores ou formatação especial
   const planilha = workbook.addWorksheet("Campanhas");
 
-  // Colunas como em uma planilha CSV
   planilha.columns = [
     {
       header: "CAMPANHA",
@@ -842,7 +839,7 @@ export async function exportarExcel(campanha: Campanha) {
     },
   ];
 
-  // Dados da campanha selecionada
+  // Dados demonstrativos da campanha selecionada
   planilha.addRow({
     nome: campanha.nome,
     periodo: campanha.periodo,
@@ -852,6 +849,47 @@ export async function exportarExcel(campanha: Campanha) {
     contatos: campanha.contatosEfetivos,
     retornos: campanha.retornosAgendados,
   });
+
+  // Identificação da fonte
+  planilha.mergeCells("A4:G4");
+
+  const fonte = planilha.getCell("A4");
+  fonte.value = "Fonte: ÁRIA — dados demonstrativos.";
+
+  fonte.font = {
+    bold: true,
+    color: { argb: "FF183B70" },
+  };
+
+  // Aviso sobre a natureza fictícia dos dados
+  planilha.mergeCells("A6:G6");
+
+  const avisoDemonstrativo = planilha.getCell("A6");
+
+  avisoDemonstrativo.value =
+    "DOCUMENTO DEMONSTRATIVO — DADOS FICTÍCIOS. " +
+    "Os indicadores não representam contatos reais, " +
+    "pagamentos ou valores efetivamente arrecadados.";
+
+  avisoDemonstrativo.alignment = {
+    vertical: "middle",
+    horizontal: "left",
+    wrapText: true,
+  };
+
+  avisoDemonstrativo.font = {
+    bold: true,
+    size: 11,
+    color: { argb: "FF92400E" },
+  };
+
+  avisoDemonstrativo.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFFFF7ED" },
+  };
+
+  planilha.getRow(6).height = 45;
 
   // Geração do arquivo
   const buffer = await workbook.xlsx.writeBuffer();
