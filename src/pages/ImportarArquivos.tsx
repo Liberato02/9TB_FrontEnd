@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   AlertCircle,
   X,
-  Eye,
 } from "lucide-react";
 
 import ResultadoImportacao from "../components/importacao/ResultadoImportacao";
@@ -21,21 +20,6 @@ import type { ImportacaoCsvApi } from "../types/ImportacaoCsvApi";
 import type { ImportacaoPdfApi } from "../types/ImportacaoPdfApi";
 
 type TipoArquivo = "csv" | "pdf";
-
-const exemploCsv: ImportacaoCsvApi = {
-  campanhaId: 999,
-  campanhaNome: "Campanha 999 (exemplo)",
-  titulosNovos: 12,
-  titulosExistentes: 3,
-  titulosAssociados: 15,
-  duplicadosNoCsv: 2,
-};
-
-const exemploPdf: ImportacaoPdfApi = {
-  totalLidos: 36,
-  novos: 30,
-  existentes: 6,
-};
 
 function formatarTamanho(bytes: number): string {
   if (bytes < 1024) {
@@ -73,8 +57,6 @@ function ImportarArquivos() {
   );
 
   const [enviando, setEnviando] = useState<TipoArquivo | null>(null);
-
-  const [visualizacao, setVisualizacao] = useState<TipoArquivo | null>(null);
 
   const envioEmAndamento = useRef(false);
 
@@ -203,10 +185,6 @@ function ImportarArquivos() {
       envioEmAndamento.current = false;
       setEnviando(null);
     }
-  }
-
-  function alternarExemplo(tipo: TipoArquivo) {
-    setVisualizacao((atual) => (atual === tipo ? null : tipo));
   }
 
   return (
@@ -461,66 +439,6 @@ function ImportarArquivos() {
         </article>
       </section>
 
-      <section className="rounded-2xl border border-slate-100 bg-white p-6">
-        <h3 className="text-lg font-semibold">
-          Pré-visualização dos resultados
-        </h3>
-
-        <p className="mt-2 text-sm text-slate-500">
-          Exemplos demonstrativos para conhecer os indicadores exibidos após uma
-          importação.
-        </p>
-
-        <div className="mt-5 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={() => alternarExemplo("csv")}
-            aria-pressed={visualizacao === "csv"}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-4 py-3 text-sm font-medium text-[#183B70] hover:bg-blue-100"
-          >
-            <Eye size={18} />
-
-            {visualizacao === "csv"
-              ? "Ocultar exemplo CSV"
-              : "Exemplo de resultado CSV"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => alternarExemplo("pdf")}
-            aria-pressed={visualizacao === "pdf"}
-            className="inline-flex items-center gap-2 rounded-lg bg-orange-50 px-4 py-3 text-sm font-medium text-[#183B70] hover:bg-orange-100"
-          >
-            <Eye size={18} />
-
-            {visualizacao === "pdf"
-              ? "Ocultar exemplo PDF"
-              : "Exemplo de resultado PDF"}
-          </button>
-        </div>
-
-        {visualizacao && (
-          <div className="mt-5 space-y-4">
-            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-              <p className="text-sm font-semibold text-amber-900">
-                Demonstração com dados fictícios
-              </p>
-
-              <p className="mt-1 text-sm text-amber-800">
-                Este resultado é apenas um exemplo visual. Nenhum arquivo foi
-                processado ou enviado ao servidor.
-              </p>
-            </div>
-
-            {visualizacao === "csv" ? (
-              <ResultadoImportacao tipo="csv" resultado={exemploCsv} />
-            ) : (
-              <ResultadoImportacao tipo="pdf" resultado={exemploPdf} />
-            )}
-          </div>
-        )}
-      </section>
-
       <section className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
         <Info size={20} className="mt-0.5 shrink-0 text-[#3F7DD9]" />
 
@@ -537,11 +455,6 @@ function ImportarArquivos() {
           </p>
         </div>
       </section>
-
-      <p className="text-xs text-slate-400">
-        Integração de importações com o backend da ÁRIA. Utilize arquivos de
-        teste controlados durante a validação.
-      </p>
     </div>
   );
 }

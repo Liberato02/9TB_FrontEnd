@@ -1,4 +1,3 @@
-
 import {
   AlignmentType,
   Document,
@@ -185,7 +184,7 @@ export async function exportarCancelamentosWord({
                 alignment: AlignmentType.CENTER,
                 children: [
                   new TextRun({
-                    text: "9º Tabelionato de Protesto de São Paulo — ÁRIA | Página ",
+                    text: "9º Tabelionato de Protesto de São Paulo | ÁRIA | Página ",
                     size: 18,
                     font: "Arial",
                   }),
@@ -253,7 +252,7 @@ export async function exportarCancelamentosWord({
             spacing: { before: 250 },
             children: [
               new TextRun({
-                text: "Fonte: ÁRIA — indicadores de títulos e cancelamentos.",
+                text: "Fonte: indicadores de títulos e cancelamentos da ÁRIA.",
                 color: "64748B",
                 size: 18,
                 font: "Arial",
@@ -461,19 +460,17 @@ export async function exportarCancelamentosExcel({
 
   planilha.getColumn("percentual").numFmt = "0.00%";
 
-  // Identificação da origem dos indicadores
   planilha.addRow([]);
   planilha.mergeCells("A4:E4");
 
   const fonte = planilha.getCell("A4");
   fonte.value =
-    "Fonte: ÁRIA — indicadores de títulos e cancelamentos.";
+    "Fonte: indicadores de títulos e cancelamentos da ÁRIA.";
   fonte.font = {
     bold: true,
     color: { argb: "FF183B70" },
   };
 
-  // Aviso interpretativo
   planilha.mergeCells("A6:E6");
 
   const celulaAviso = planilha.getCell("A6");
@@ -510,4 +507,3 @@ export async function exportarCancelamentosExcel({
     `${nomeArquivo(campanha)}.xlsx`,
   );
 }
-

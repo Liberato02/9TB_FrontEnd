@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FolderKanban, ArrowRight, Info } from "lucide-react";
 
-import GraficoCampanhas from "../components/charts/GraficoCampanhas";
 import IndicadoresCancelamentos from "../components/analises/IndicadoresCancelamentos";
 
 import { listarCampanhasApi } from "../services/campanhaService";
@@ -120,7 +119,7 @@ function Dashboard() {
     }
 
     if (erroCampanhas) {
-      return "—";
+      return "Indisponível";
     }
 
     return formatarNumero(campanhas.length);
@@ -154,7 +153,7 @@ function Dashboard() {
       return "Carregando...";
     }
 
-    return "—";
+    return "Sem dados";
   }
 
   return (
@@ -415,21 +414,6 @@ function Dashboard() {
         </div>
       </section>
 
-      <section className="rounded-xl border border-slate-100 bg-white p-5">
-        <h3 className="text-lg font-semibold">
-          Evolução das Análises de Contatos
-        </h3>
-
-        <p className="mt-2 text-sm text-slate-500">
-          Visualização histórica demonstrativa. Os dados de contatos ainda não
-          possuem integração confirmada com o backend.
-        </p>
-
-        <div className="mt-5">
-          <GraficoCampanhas />
-        </div>
-      </section>
-
       <section className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
         <Info size={20} className="mt-0.5 shrink-0 text-[#3F7DD9]" />
 
@@ -439,11 +423,6 @@ function Dashboard() {
           considerados automaticamente ativos ou não pagos.
         </p>
       </section>
-
-      <p className="text-sm text-slate-400">
-        Campanhas e indicadores de cancelamentos consultados no backend da ÁRIA.
-        O gráfico de contatos permanece demonstrativo.
-      </p>
     </div>
   );
 }

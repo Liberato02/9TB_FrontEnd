@@ -76,7 +76,7 @@ function Campanhas() {
     }
 
     if (erro) {
-      return "—";
+      return "Indisponível";
     }
 
     return totalCampanhas.toLocaleString("pt-BR");
@@ -87,8 +87,12 @@ function Campanhas() {
       return "Carregando...";
     }
 
-    if (erro || !ultimaDataCriacao) {
-      return "—";
+    if (erro) {
+      return "Indisponível";
+    }
+
+    if (!ultimaDataCriacao) {
+      return "Nenhum";
     }
 
     return formatarData(ultimaDataCriacao);
@@ -96,7 +100,6 @@ function Campanhas() {
 
   return (
     <div>
-      {/* CABEÇALHO */}
       <header className="mb-8">
         <p className="text-sm text-slate-500">ÁRIA / Inteligência de Dados</p>
 
@@ -108,7 +111,6 @@ function Campanhas() {
         </p>
       </header>
 
-      {/* PESQUISA */}
       <section className="mb-6 rounded-2xl border border-slate-100 bg-white p-6">
         <div className="flex items-center gap-3">
           <Search size={20} className="text-slate-400" />
@@ -124,7 +126,6 @@ function Campanhas() {
         </div>
       </section>
 
-      {/* INDICADORES REAIS */}
       <section
         className="grid grid-cols-1 gap-5 md:grid-cols-2"
         aria-busy={carregando}
@@ -152,7 +153,6 @@ function Campanhas() {
         </article>
       </section>
 
-      {/* HISTÓRICO */}
       <section className="mt-8 rounded-2xl border border-slate-100 bg-white p-6">
         <h3 className="text-lg font-semibold">Histórico de campanhas</h3>
 
@@ -238,11 +238,6 @@ function Campanhas() {
           </table>
         </div>
       </section>
-
-      <p className="mt-6 text-xs text-slate-400">
-        Listagem conectada ao banco de dados da ÁRIA. As demais telas serão
-        integradas gradualmente.
-      </p>
     </div>
   );
 }

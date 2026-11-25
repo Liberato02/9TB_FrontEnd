@@ -15,8 +15,6 @@ const Relatorios = lazy(() => import("./pages/Relatorios"));
 
 const ImportarArquivos = lazy(() => import("./pages/ImportarArquivos"));
 
-const Recomendacoes = lazy(() => import("./pages/Recomendacoes"));
-
 const PaginaNaoEncontrada = lazy(() => import("./pages/PaginaNaoEncontrada"));
 
 function App() {
@@ -53,17 +51,11 @@ function App() {
 
             <Route path="/importar-arquivos" element={<ImportarArquivos />} />
 
-            <Route path="/recomendacoes" element={<Recomendacoes />} />
-
             <Route path="/relatorios" element={<Relatorios />} />
 
             <Route path="*" element={<PaginaNaoEncontrada />} />
           </Routes>
         </Suspense>
-
-        <p className="mt-8 text-xs text-slate-400">
-          ÁRIA — Ambiente demonstrativo com dados fictícios.
-        </p>
       </main>
     </div>
   );

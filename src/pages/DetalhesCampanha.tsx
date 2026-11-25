@@ -27,7 +27,7 @@ function formatarNumero(valor: number): string {
 
 function formatarMoeda(valor: number | null): string {
   if (valor === null) {
-    return "—";
+    return "Não informado";
   }
 
   return valor.toLocaleString("pt-BR", {
@@ -38,7 +38,7 @@ function formatarMoeda(valor: number | null): string {
 
 function formatarData(data: string | null): string {
   if (!data) {
-    return "—";
+    return "Não consta";
   }
 
   const dataSemHorario = data.split("T")[0];
@@ -234,7 +234,6 @@ function DetalhesCampanha() {
 
   return (
     <div className="space-y-6">
-      {/* CABEÇALHO */}
       <header>
         {voltarCampanhas}
 
@@ -254,7 +253,6 @@ function DetalhesCampanha() {
         </p>
       </header>
 
-      {/* INDICADORES REAIS */}
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => {
           const Icone = card.icone;
@@ -274,7 +272,6 @@ function DetalhesCampanha() {
         })}
       </section>
 
-      {/* TÍTULOS REAIS */}
       <section className="rounded-xl border border-slate-100 bg-white p-5">
         <div>
           <h3 className="text-lg font-semibold">Títulos da campanha</h3>
@@ -284,7 +281,6 @@ function DetalhesCampanha() {
           </p>
         </div>
 
-        {/* FILTROS */}
         <div className="mt-5 flex flex-col gap-3 md:flex-row">
           <div className="flex flex-1 items-center gap-3 rounded-lg border border-slate-200 px-4 py-3">
             <Search size={18} className="text-slate-400" />
@@ -315,7 +311,6 @@ function DetalhesCampanha() {
           </select>
         </div>
 
-        {/* TABELA */}
         <div className="mt-5 overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-slate-200 text-slate-500">
@@ -401,7 +396,6 @@ function DetalhesCampanha() {
         </p>
       </section>
 
-      {/* AVISO IMPORTANTE */}
       <div className="rounded-xl border border-blue-100 bg-blue-50 p-4">
         <p className="text-sm text-slate-600">
           <strong>Importante:</strong> os cancelamentos encontrados não

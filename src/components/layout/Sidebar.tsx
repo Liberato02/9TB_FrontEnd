@@ -35,11 +35,6 @@ const menu = [
     caminho: "/importar-arquivos",
   },
   {
-    nome: "Recomendações da ÁRIA",
-    icone: BrainCircuit,
-    caminho: "/recomendacoes",
-  },
-  {
     nome: "Relatórios",
     icone: FileBarChart,
     caminho: "/relatorios",
@@ -55,7 +50,6 @@ function Sidebar() {
 
   return (
     <aside className="w-full border-b border-slate-200 bg-white p-6 md:min-h-screen md:w-72 md:shrink-0 md:border-b-0 md:border-r">
-      {/* IDENTIDADE DA ÁRIA */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#183B70]">
@@ -69,7 +63,6 @@ function Sidebar() {
           </div>
         </div>
 
-        {/* BOTÃO DO MENU NO CELULAR */}
         <button
           type="button"
           onClick={() => setMenuAberto((atual) => !atual)}
@@ -82,7 +75,6 @@ function Sidebar() {
         </button>
       </div>
 
-      {/* NAVEGAÇÃO RESPONSIVA */}
       <div
         id="menu-navegacao-aria"
         className={`mt-6 md:mt-12 md:block ${menuAberto ? "block" : "hidden"}`}
@@ -113,7 +105,6 @@ function Sidebar() {
           })}
         </nav>
 
-        {/* RODAPÉ */}
         <div className="mt-12 border-t border-slate-100 pt-6">
           <div className="flex items-center gap-3 px-4 text-sm text-slate-500">
             <Settings size={19} className="shrink-0" />
