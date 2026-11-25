@@ -159,11 +159,11 @@ function Dashboard() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-sm text-slate-500">ÁRIA / Painel de Inteligência</p>
+        <p className="text-sm text-texto-secundario">ÁRIA / Painel de Inteligência</p>
 
-        <h2 className="mt-1 text-3xl font-semibold">Visão Geral</h2>
+        <h2 className="mt-1 font-titulo text-4xl font-bold">Visão Geral</h2>
 
-        <p className="mt-1 text-base text-slate-500">
+        <p className="mt-1 text-base text-texto-secundario">
           Acompanhe as campanhas cadastradas e os indicadores de cancelamentos
           encontrados nos arquivos importados.
         </p>
@@ -171,23 +171,23 @@ function Dashboard() {
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <article
-          className="flex items-center gap-4 rounded-xl border border-slate-100 bg-white p-5"
+          className="flex items-center gap-4 rounded-xl border border-borda bg-superficie p-5"
           aria-busy={carregandoCampanhas}
         >
-          <div className="rounded-xl bg-blue-50 p-3">
-            <FolderKanban size={25} className="text-[#3F7DD9]" />
+          <div className="rounded-xl bg-destaque-suave p-3">
+            <FolderKanban size={25} className="text-destaque" />
           </div>
 
           <div>
-            <p className="text-sm text-slate-500">Campanhas cadastradas</p>
+            <p className="text-sm text-texto-secundario">Campanhas cadastradas</p>
 
-            <p className="mt-1 text-3xl font-semibold">
+            <p className="mt-1 font-titulo text-4xl font-bold">
               {exibirTotalCampanhas()}
             </p>
           </div>
         </article>
 
-        <article className="rounded-xl border border-slate-100 bg-white p-5 lg:col-span-2">
+        <article className="rounded-xl border border-borda bg-superficie p-5 lg:col-span-2">
           <label
             htmlFor="campanha-dashboard"
             className="block text-sm font-semibold"
@@ -202,7 +202,7 @@ function Dashboard() {
             disabled={
               carregandoCampanhas || erroCampanhas || campanhas.length === 0
             }
-            className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#3F7DD9] disabled:bg-slate-50 disabled:text-slate-400"
+            className="mt-3 w-full rounded-lg border border-borda bg-superficie px-4 py-3 text-sm outline-none focus:border-destaque disabled:bg-superficie-suave disabled:text-texto-suave"
           >
             {campanhas.length === 0 && (
               <option value="">
@@ -219,7 +219,7 @@ function Dashboard() {
             ))}
           </select>
 
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="mt-2 text-sm text-texto-secundario">
             Selecione uma campanha para visualizar seus indicadores de
             cancelamentos.
           </p>
@@ -231,7 +231,7 @@ function Dashboard() {
           <div>
             <h3 className="text-xl font-semibold">Indicadores da Campanha</h3>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-texto-secundario">
               {campanhaSelecionada?.nome ?? "Nenhuma campanha selecionada"}
             </p>
           </div>
@@ -239,7 +239,7 @@ function Dashboard() {
           {campanhaSelecionada && (
             <Link
               to={`/campanhas/${campanhaSelecionada.id}`}
-              className="inline-flex items-center gap-2 text-sm font-medium text-[#3F7DD9] hover:underline"
+              className="inline-flex items-center gap-2 text-sm font-medium text-destaque hover:underline"
             >
               Ver detalhes
               <ArrowRight size={17} />
@@ -253,9 +253,9 @@ function Dashboard() {
           ) : (
             <div
               role="status"
-              className="rounded-xl border border-slate-100 bg-white p-5"
+              className="rounded-xl border border-borda bg-superficie p-5"
             >
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-texto-secundario">
                 Carregando indicadores de cancelamentos...
               </p>
             </div>
@@ -263,9 +263,9 @@ function Dashboard() {
         ) : erroCampanhas ? (
           <div
             role="alert"
-            className="rounded-xl border border-red-100 bg-red-50 p-5"
+            className="rounded-xl border border-erro-suave-forte bg-erro-suave p-5"
           >
-            <p className="text-sm text-red-700">
+            <p className="text-sm text-erro">
               Não foi possível consultar as campanhas. Verifique a conexão com o
               backend.
             </p>
@@ -275,28 +275,28 @@ function Dashboard() {
         ) : falhaIndicadoresSelecionados ? (
           <div
             role="alert"
-            className="rounded-xl border border-amber-100 bg-amber-50 p-5"
+            className="rounded-xl border border-alerta-suave-forte bg-alerta-suave p-5"
           >
-            <p className="text-sm text-amber-800">
+            <p className="text-sm text-alerta">
               Não foi possível carregar os indicadores desta campanha. Os demais
               dados disponíveis continuam sendo exibidos.
             </p>
           </div>
         ) : (
-          <div className="rounded-xl border border-slate-100 bg-white p-5">
-            <p className="text-sm text-slate-500">
+          <div className="rounded-xl border border-borda bg-superficie p-5">
+            <p className="text-sm text-texto-secundario">
               Nenhum indicador disponível para esta campanha.
             </p>
           </div>
         )}
       </section>
 
-      <section className="rounded-xl border border-slate-100 bg-white p-5">
+      <section className="rounded-xl border border-borda bg-superficie p-5">
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
           <div>
             <h3 className="text-lg font-semibold">Resumo das Campanhas</h3>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-texto-secundario">
               Comparação dos indicadores reais de títulos e cancelamentos
               encontrados nos PDFs importados.
             </p>
@@ -304,7 +304,7 @@ function Dashboard() {
 
           <Link
             to="/campanhas"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[#3F7DD9] hover:underline"
+            className="inline-flex items-center gap-2 text-sm font-medium text-destaque hover:underline"
           >
             Todas as campanhas
             <ArrowRight size={17} />
@@ -316,7 +316,7 @@ function Dashboard() {
           aria-busy={carregandoCampanhas || carregandoIndicadores}
         >
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 text-slate-500">
+            <thead className="border-b border-borda text-texto-secundario">
               <tr>
                 <th className="px-3 py-3 font-medium">Campanha</th>
 
@@ -341,7 +341,7 @@ function Dashboard() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-3 py-8 text-center text-slate-400"
+                    className="px-3 py-8 text-center text-texto-suave"
                   >
                     Carregando campanhas...
                   </td>
@@ -353,7 +353,7 @@ function Dashboard() {
                   <td
                     colSpan={6}
                     role="alert"
-                    className="px-3 py-8 text-center text-red-600"
+                    className="px-3 py-8 text-center text-erro"
                   >
                     Não foi possível consultar as campanhas.
                   </td>
@@ -366,7 +366,7 @@ function Dashboard() {
                   <tr>
                     <td
                       colSpan={6}
-                      className="px-3 py-8 text-center text-slate-400"
+                      className="px-3 py-8 text-center text-texto-suave"
                     >
                       Nenhuma campanha cadastrada.
                     </td>
@@ -378,7 +378,7 @@ function Dashboard() {
                 campanhas.map((campanha) => (
                   <tr
                     key={campanha.id}
-                    className="border-b border-slate-100 last:border-0"
+                    className="border-b border-borda last:border-0"
                   >
                     <td className="px-3 py-4 font-medium">{campanha.nome}</td>
 
@@ -401,7 +401,7 @@ function Dashboard() {
                     <td className="px-3 py-4">
                       <Link
                         to={`/campanhas/${campanha.id}`}
-                        className="inline-flex items-center gap-1 whitespace-nowrap font-medium text-[#3F7DD9] hover:underline"
+                        className="inline-flex items-center gap-1 whitespace-nowrap font-medium text-destaque hover:underline"
                       >
                         Detalhes
                         <ArrowRight size={15} />
@@ -414,10 +414,10 @@ function Dashboard() {
         </div>
       </section>
 
-      <section className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
-        <Info size={20} className="mt-0.5 shrink-0 text-[#3F7DD9]" />
+      <section className="flex items-start gap-3 rounded-xl border border-destaque-suave-forte bg-destaque-suave p-4">
+        <Info size={20} className="mt-0.5 shrink-0 text-destaque" />
 
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-texto-secundario">
           Os cancelamentos encontrados não comprovam que foram causados pelas
           campanhas. Títulos não encontrados nos PDFs também não devem ser
           considerados automaticamente ativos ou não pagos.

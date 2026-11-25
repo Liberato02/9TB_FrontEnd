@@ -222,22 +222,22 @@ function Relatorios() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-sm text-slate-500">ÁRIA / Inteligência de Dados</p>
+        <p className="text-sm text-texto-secundario">ÁRIA / Inteligência de Dados</p>
 
-        <h2 className="mt-1 text-3xl font-semibold">Relatórios</h2>
+        <h2 className="mt-1 font-titulo text-4xl font-bold">Relatórios</h2>
 
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-texto-secundario">
           Exporte os indicadores de títulos e cancelamentos de uma campanha em
           Word, PDF ou Excel.
         </p>
       </header>
 
-      <section className="rounded-xl border border-slate-100 bg-white p-5">
+      <section className="rounded-xl border border-borda bg-superficie p-5">
         <label htmlFor="campanha-relatorio" className="text-lg font-semibold">
           Selecionar campanha
         </label>
 
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-texto-secundario">
           Escolha uma das campanhas cadastradas.
         </p>
 
@@ -251,7 +251,7 @@ function Relatorios() {
             erroCampanhas ||
             campanhas.length === 0
           }
-          className="mt-4 w-full rounded-xl border border-slate-200 bg-white p-3 text-sm text-[#183B70] outline-none focus:border-[#3F7DD9] disabled:bg-slate-50 disabled:text-slate-400"
+          className="mt-4 w-full rounded-xl border border-borda bg-superficie p-3 text-sm text-texto outline-none focus:border-destaque disabled:bg-superficie-suave disabled:text-texto-suave"
         >
           {campanhas.length === 0 && (
             <option value="">
@@ -273,7 +273,7 @@ function Relatorios() {
         <div>
           <h3 className="text-xl font-semibold">Resultados da campanha</h3>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-texto-secundario">
             {campanhaSelecionada?.nome ?? "Nenhuma campanha selecionada"}
           </p>
         </div>
@@ -282,16 +282,16 @@ function Relatorios() {
           <div
             role="status"
             aria-busy="true"
-            className="rounded-xl border border-slate-100 bg-white p-5"
+            className="rounded-xl border border-borda bg-superficie p-5"
           >
-            <p className="text-sm text-slate-500">Carregando indicadores...</p>
+            <p className="text-sm text-texto-secundario">Carregando indicadores...</p>
           </div>
         ) : erroCampanhas ? (
           <div
             role="alert"
-            className="rounded-xl border border-red-100 bg-red-50 p-5"
+            className="rounded-xl border border-erro-suave-forte bg-erro-suave p-5"
           >
-            <p className="text-sm text-red-700">
+            <p className="text-sm text-erro">
               Não foi possível consultar as campanhas. Verifique a conexão com o
               backend.
             </p>
@@ -299,9 +299,9 @@ function Relatorios() {
         ) : erroIndicadores ? (
           <div
             role="alert"
-            className="rounded-xl border border-amber-100 bg-amber-50 p-5"
+            className="rounded-xl border border-alerta-suave-forte bg-alerta-suave p-5"
           >
-            <p className="text-sm text-amber-800">
+            <p className="text-sm text-alerta">
               Não foi possível consultar os indicadores da campanha selecionada.
             </p>
           </div>
@@ -313,36 +313,36 @@ function Relatorios() {
               return (
                 <article
                   key={card.titulo}
-                  className="min-w-0 rounded-xl border border-slate-100 bg-white p-4"
+                  className="min-w-0 rounded-xl border border-borda bg-superficie p-4"
                 >
-                  <Icone size={21} className="text-[#3F7DD9]" />
+                  <Icone size={21} className="text-destaque" />
 
-                  <p className="mt-2 min-h-10 text-sm text-slate-500">
+                  <p className="mt-2 min-h-10 text-sm text-texto-secundario">
                     {card.titulo}
                   </p>
 
-                  <p className="mt-1 text-3xl font-semibold">{card.valor}</p>
+                  <p className="mt-1 font-titulo text-4xl font-bold">{card.valor}</p>
                 </article>
               );
             })}
           </div>
         ) : (
-          <div className="rounded-xl border border-slate-100 bg-white p-5">
-            <p className="text-sm text-slate-500">
+          <div className="rounded-xl border border-borda bg-superficie p-5">
+            <p className="text-sm text-texto-secundario">
               Não existem indicadores disponíveis para a campanha selecionada.
             </p>
           </div>
         )}
       </section>
 
-      <section className="rounded-xl border border-slate-100 bg-white p-5">
+      <section className="rounded-xl border border-borda bg-superficie p-5">
         <div className="flex items-center gap-3">
-          <FileBarChart size={23} className="text-[#3F7DD9]" />
+          <FileBarChart size={23} className="text-destaque" />
 
           <h3 className="text-lg font-semibold">Exportar relatório</h3>
         </div>
 
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-texto-secundario">
           Exporte os indicadores da campanha selecionada.
         </p>
 
@@ -351,7 +351,7 @@ function Relatorios() {
             type="button"
             disabled={!podeExportar || exportando !== null}
             onClick={() => void baixarRelatorio("word")}
-            className="flex items-center justify-center gap-2 rounded-xl bg-blue-50 p-4 text-sm font-semibold text-[#183B70] hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-xl bg-destaque-suave p-4 text-sm font-semibold text-texto hover:bg-destaque-suave-forte disabled:cursor-not-allowed disabled:opacity-50"
           >
             <FileText size={20} />
             <Download size={17} />
@@ -362,7 +362,7 @@ function Relatorios() {
             type="button"
             disabled={!podeExportar || exportando !== null}
             onClick={() => void baixarRelatorio("pdf")}
-            className="flex items-center justify-center gap-2 rounded-xl bg-red-50 p-4 text-sm font-semibold text-red-600 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-xl bg-erro-suave p-4 text-sm font-semibold text-erro hover:bg-erro-suave-forte disabled:cursor-not-allowed disabled:opacity-50"
           >
             <FileBarChart size={20} />
             <Download size={17} />
@@ -373,7 +373,7 @@ function Relatorios() {
             type="button"
             disabled={!podeExportar || exportando !== null}
             onClick={() => void baixarRelatorio("excel")}
-            className="flex items-center justify-center gap-2 rounded-xl bg-green-50 p-4 text-sm font-semibold text-green-700 hover:bg-green-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-xl bg-sucesso-suave p-4 text-sm font-semibold text-sucesso hover:bg-sucesso-suave-forte disabled:cursor-not-allowed disabled:opacity-50"
           >
             <FileSpreadsheet size={20} />
             <Download size={17} />
@@ -384,20 +384,20 @@ function Relatorios() {
         {erroExportacao && (
           <p
             role="alert"
-            className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-600"
+            className="mt-4 rounded-lg bg-erro-suave p-3 text-sm text-erro"
           >
             {erroExportacao}
           </p>
         )}
       </section>
 
-      <section className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
-        <Info size={20} className="mt-0.5 shrink-0 text-[#3F7DD9]" />
+      <section className="flex items-start gap-3 rounded-xl border border-destaque-suave-forte bg-destaque-suave p-4">
+        <Info size={20} className="mt-0.5 shrink-0 text-destaque" />
 
         <div>
           <h3 className="text-sm font-semibold">Sobre os dados apresentados</h3>
 
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-texto-secundario">
             Os cancelamentos encontrados não comprovam que foram causados pela
             campanha. A ausência de correspondência nos PDFs também não comprova
             que o título continua ativo ou não foi pago.
