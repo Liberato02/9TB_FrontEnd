@@ -101,19 +101,19 @@ function Campanhas() {
   return (
     <div>
       <header className="mb-8">
-        <p className="text-sm text-slate-500">ÁRIA / Inteligência de Dados</p>
+        <p className="text-sm text-texto-secundario">ÁRIA / Inteligência de Dados</p>
 
-        <h2 className="mt-2 text-3xl font-semibold">Campanhas históricas</h2>
+        <h2 className="mt-2 font-titulo text-4xl font-bold">Campanhas históricas</h2>
 
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-texto-secundario">
           Consulte as campanhas registradas no sistema. Os dados desta listagem
           são obtidos do backend da ÁRIA.
         </p>
       </header>
 
-      <section className="mb-6 rounded-2xl border border-slate-100 bg-white p-6">
+      <section className="mb-6 rounded-2xl border border-borda bg-superficie p-6">
         <div className="flex items-center gap-3">
-          <Search size={20} className="text-slate-400" />
+          <Search size={20} className="text-texto-suave" />
 
           <input
             type="text"
@@ -121,7 +121,7 @@ function Campanhas() {
             aria-label="Pesquisar campanhas"
             value={pesquisa}
             onChange={(evento) => setPesquisa(evento.target.value)}
-            className="w-full outline-none placeholder:text-slate-400"
+            className="w-full outline-none placeholder:text-texto-suave"
           />
         </div>
       </section>
@@ -130,39 +130,39 @@ function Campanhas() {
         className="grid grid-cols-1 gap-5 md:grid-cols-2"
         aria-busy={carregando}
       >
-        <article className="rounded-2xl border border-slate-100 bg-white p-6">
+        <article className="rounded-2xl border border-borda bg-superficie p-6">
           <div className="flex items-center gap-3">
-            <CalendarDays className="text-[#3F7DD9]" size={22} />
+            <CalendarDays className="text-destaque" size={22} />
 
-            <p className="text-sm text-slate-500">Campanhas registradas</p>
+            <p className="text-sm text-texto-secundario">Campanhas registradas</p>
           </div>
 
-          <h3 className="mt-4 text-3xl font-semibold">{exibirTotal()}</h3>
+          <h3 className="mt-4 font-titulo text-4xl font-bold">{exibirTotal()}</h3>
         </article>
 
-        <article className="rounded-2xl border border-slate-100 bg-white p-6">
+        <article className="rounded-2xl border border-borda bg-superficie p-6">
           <div className="flex items-center gap-3">
-            <CalendarClock className="text-[#F27D70]" size={22} />
+            <CalendarClock className="text-coral-texto" size={22} />
 
-            <p className="text-sm text-slate-500">Último cadastro</p>
+            <p className="text-sm text-texto-secundario">Último cadastro</p>
           </div>
 
-          <h3 className="mt-4 text-3xl font-semibold">
+          <h3 className="mt-4 font-titulo text-4xl font-bold">
             {exibirUltimoCadastro()}
           </h3>
         </article>
       </section>
 
-      <section className="mt-8 rounded-2xl border border-slate-100 bg-white p-6">
+      <section className="mt-8 rounded-2xl border border-borda bg-superficie p-6">
         <h3 className="text-lg font-semibold">Histórico de campanhas</h3>
 
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-texto-secundario">
           Relação de campanhas cadastradas no banco de dados.
         </p>
 
         <div className="mt-6 overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 text-slate-500">
+            <thead className="border-b border-borda text-texto-secundario">
               <tr>
                 <th className="px-4 py-3 font-medium">Campanha</th>
 
@@ -177,7 +177,7 @@ function Campanhas() {
                 <tr>
                   <td
                     colSpan={3}
-                    className="px-4 py-10 text-center text-slate-400"
+                    className="px-4 py-10 text-center text-texto-suave"
                   >
                     Carregando campanhas...
                   </td>
@@ -189,7 +189,7 @@ function Campanhas() {
                   <td
                     colSpan={3}
                     role="alert"
-                    className="px-4 py-10 text-center text-red-500"
+                    className="px-4 py-10 text-center text-erro"
                   >
                     Não foi possível carregar as campanhas. Verifique a conexão
                     com o backend.
@@ -201,7 +201,7 @@ function Campanhas() {
                 <tr>
                   <td
                     colSpan={3}
-                    className="px-4 py-10 text-center text-slate-400"
+                    className="px-4 py-10 text-center text-texto-suave"
                   >
                     {pesquisa.trim()
                       ? "Nenhuma campanha corresponde à pesquisa."
@@ -215,7 +215,7 @@ function Campanhas() {
                 campanhasFiltradas.map((campanha) => (
                   <tr
                     key={campanha.id}
-                    className="border-b border-slate-100 last:border-0"
+                    className="border-b border-borda last:border-0"
                   >
                     <td className="px-4 py-4 font-medium">{campanha.nome}</td>
 
@@ -226,7 +226,7 @@ function Campanhas() {
                     <td className="px-4 py-4">
                       <Link
                         to={`/campanhas/${campanha.id}`}
-                        className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-50 px-3 py-2 font-medium text-[#183B70] transition-colors hover:bg-blue-100"
+                        className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-destaque-suave px-3 py-2 font-medium text-texto transition-colors hover:bg-destaque-suave-forte"
                       >
                         <Eye size={17} />
                         Ver detalhes

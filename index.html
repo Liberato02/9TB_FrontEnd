@@ -5,6 +5,27 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ÁRIA · 9º Tabelionato de Protesto de São Paulo</title>
+    <script>
+      (function () {
+        var tema = "claro";
+
+        try {
+          var salvo = localStorage.getItem("aria-tema");
+
+          if (salvo === "claro" || salvo === "escuro") {
+            tema = salvo;
+          } else if (
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+          ) {
+            tema = "escuro";
+          }
+        } catch (erro) {
+          tema = "claro";
+        }
+
+        document.documentElement.dataset.tema = tema;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

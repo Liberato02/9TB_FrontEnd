@@ -126,11 +126,11 @@ function Analises() {
   return (
     <div className="space-y-6">
       <header>
-        <p className="text-sm text-slate-500">ÁRIA / Inteligência de Dados</p>
+        <p className="text-sm text-texto-secundario">ÁRIA / Inteligência de Dados</p>
 
-        <h2 className="mt-1 text-3xl font-semibold text-slate-800">Análises</h2>
+        <h2 className="mt-1 font-titulo text-4xl font-bold text-texto">Análises</h2>
 
-        <p className="mt-1 text-base text-slate-500">
+        <p className="mt-1 text-base text-texto-secundario">
           Indicadores de títulos e cancelamentos por campanha.
         </p>
       </header>
@@ -140,7 +140,7 @@ function Analises() {
           <div>
             <h3 className="text-xl font-semibold">Títulos e Cancelamentos</h3>
 
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-texto-secundario">
               Indicadores reais de cancelamentos encontrados nos documentos
               importados.
             </p>
@@ -155,7 +155,7 @@ function Analises() {
             disabled={
               carregandoCampanhas || erroCampanhas || campanhas.length === 0
             }
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-[#3F7DD9] disabled:bg-slate-50 disabled:text-slate-400 lg:w-64"
+            className="w-full rounded-xl border border-borda bg-superficie px-4 py-3 text-sm outline-none focus:border-destaque disabled:bg-superficie-suave disabled:text-texto-suave lg:w-64"
           >
             {campanhas.length === 0 && (
               <option value="">
@@ -177,34 +177,34 @@ function Analises() {
           <div
             role="status"
             aria-busy="true"
-            className="rounded-xl border border-slate-100 bg-white p-6"
+            className="rounded-xl border border-borda bg-superficie p-6"
           >
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-texto-secundario">
               Carregando indicadores de cancelamentos...
             </p>
           </div>
         ) : erroCampanhas ? (
           <div
             role="alert"
-            className="rounded-xl border border-red-100 bg-red-50 p-5"
+            className="rounded-xl border border-erro-suave-forte bg-erro-suave p-5"
           >
-            <p className="text-sm text-red-700">
+            <p className="text-sm text-erro">
               Não foi possível consultar as campanhas. Verifique a conexão com o
               backend.
             </p>
           </div>
         ) : campanhas.length === 0 ? (
-          <div className="rounded-xl border border-slate-100 bg-white p-6">
-            <p className="text-sm text-slate-500">
+          <div className="rounded-xl border border-borda bg-superficie p-6">
+            <p className="text-sm text-texto-secundario">
               Nenhuma campanha cadastrada no sistema.
             </p>
           </div>
         ) : erroCancelamentos ? (
           <div
             role="alert"
-            className="rounded-xl border border-amber-100 bg-amber-50 p-5"
+            className="rounded-xl border border-alerta-suave-forte bg-alerta-suave p-5"
           >
-            <p className="text-sm text-amber-800">
+            <p className="text-sm text-alerta">
               Não foi possível carregar os indicadores desta campanha. Verifique
               a conexão com o backend.
             </p>
@@ -213,13 +213,13 @@ function Analises() {
           <>
             <IndicadoresCancelamentos indicadores={indicadoresCancelamentos} />
 
-            <div className="flex flex-col justify-between gap-3 rounded-xl border border-slate-100 bg-white p-4 sm:flex-row sm:items-center">
+            <div className="flex flex-col justify-between gap-3 rounded-xl border border-borda bg-superficie p-4 sm:flex-row sm:items-center">
               <div>
                 <p className="text-sm font-medium">
                   {campanhaSelecionada?.nome}
                 </p>
 
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-texto-secundario">
                   Indicadores consultados no backend da ÁRIA.
                 </p>
               </div>
@@ -227,7 +227,7 @@ function Analises() {
               {campanhaSelecionada && (
                 <Link
                   to={`/campanhas/${campanhaSelecionada.id}`}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-[#3F7DD9] hover:underline"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-destaque hover:underline"
                 >
                   Ver títulos da campanha
                   <ArrowRight size={17} />
@@ -236,17 +236,17 @@ function Analises() {
             </div>
           </>
         ) : (
-          <div className="rounded-xl border border-slate-100 bg-white p-6">
-            <p className="text-sm text-slate-500">
+          <div className="rounded-xl border border-borda bg-superficie p-6">
+            <p className="text-sm text-texto-secundario">
               Nenhum indicador disponível para esta campanha.
             </p>
           </div>
         )}
 
-        <div className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4">
-          <Info size={19} className="mt-0.5 shrink-0 text-[#3F7DD9]" />
+        <div className="flex items-start gap-3 rounded-xl border border-destaque-suave-forte bg-destaque-suave p-4">
+          <Info size={19} className="mt-0.5 shrink-0 text-destaque" />
 
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-texto-secundario">
             Cancelamentos encontrados não comprovam que a campanha foi
             responsável por eles. Títulos não encontrados nos PDFs também não
             devem ser considerados automaticamente ativos ou não pagos.

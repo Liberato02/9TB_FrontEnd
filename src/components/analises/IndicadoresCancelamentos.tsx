@@ -14,19 +14,19 @@ function IndicadoresCancelamentos({ indicadores }: Props) {
       titulo: "Total de títulos",
       valor: formatarNumero(indicadores.totalTitulos),
       icone: FileText,
-      cor: "text-[#183B70]",
+      cor: "text-texto",
     },
     {
       titulo: "Cancelamentos encontrados",
       valor: formatarNumero(indicadores.titulosCancelados),
       icone: CheckCircle2,
-      cor: "text-green-600",
+      cor: "text-sucesso",
     },
     {
       titulo: "Não encontrados nos PDFs",
       valor: formatarNumero(indicadores.naoEncontradosNosPdfs),
       icone: FileQuestion,
-      cor: "text-[#F27D70]",
+      cor: "text-coral-texto",
     },
     {
       titulo: "Percentual encontrado",
@@ -34,7 +34,7 @@ function IndicadoresCancelamentos({ indicadores }: Props) {
         maximumFractionDigits: 2,
       })}%`,
       icone: Percent,
-      cor: "text-[#3F7DD9]",
+      cor: "text-destaque",
     },
   ];
 
@@ -46,15 +46,15 @@ function IndicadoresCancelamentos({ indicadores }: Props) {
         return (
           <article
             key={card.titulo}
-            className="min-w-0 rounded-xl border border-slate-100 bg-white p-4"
+            className="min-w-0 rounded-xl border border-borda bg-superficie p-4"
           >
             <Icone size={21} className={card.cor} />
 
-            <p className="mt-2 min-h-10 text-sm text-slate-500">
+            <p className="mt-2 min-h-10 text-sm text-texto-secundario">
               {card.titulo}
             </p>
 
-            <h3 className="mt-1 text-3xl font-semibold text-[#183B70]">
+            <h3 className="mt-1 font-titulo text-4xl font-bold text-texto">
               {card.valor}
             </h3>
           </article>

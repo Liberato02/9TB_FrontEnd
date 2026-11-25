@@ -19,7 +19,7 @@ const PaginaNaoEncontrada = lazy(() => import("./pages/PaginaNaoEncontrada"));
 
 function App() {
   return (
-    <div className="min-h-screen bg-[#F6F8FC] text-[#183B70] md:flex">
+    <div className="min-h-screen bg-fundo text-texto md:flex">
       <Sidebar />
 
       <main className="min-w-0 flex-1 p-6 md:p-10">
@@ -30,10 +30,10 @@ function App() {
               aria-live="polite"
               className="flex min-h-[50vh] items-center justify-center"
             >
-              <div className="rounded-xl border border-slate-100 bg-white px-8 py-6 text-center">
-                <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-100 border-t-[#3F7DD9]" />
+              <div className="rounded-xl border border-borda bg-superficie px-8 py-6 text-center">
+                <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-destaque-suave-forte border-t-destaque" />
 
-                <p className="mt-4 text-sm text-slate-500">
+                <p className="mt-4 text-sm text-texto-secundario">
                   Carregando página...
                 </p>
               </div>
