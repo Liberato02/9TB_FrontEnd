@@ -1,40 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  BarChart3,
-  TrendingUp,
-  PhoneCall,
-  PhoneOff,
-  CalendarCheck,
-  Info,
-  ArrowRight,
-} from "lucide-react";
+import { Info, ArrowRight } from "lucide-react";
 
-import { listarAnalises } from "../services/analiseService";
 import { listarCampanhasApi } from "../services/campanhaService";
 import { buscarIndicadoresCampanhaApi } from "../services/detalhesCampanhaService";
-
-import {
-  calcularIndicadores,
-  type IndicadoresAnalises,
-} from "../services/indicadorService";
 
 import type { CampanhaApi } from "../types/CampanhaApi";
 import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
 
 import IndicadoresCancelamentos from "../components/analises/IndicadoresCancelamentos";
-import GraficoContatos from "../components/charts/GraficoContatos";
-import GraficoResultados from "../components/charts/GraficoResultados";
 
 type ResultadoConsultaCancelamentos = {
   campanhaId: number;
   indicadores: IndicadoresCampanhaApi | null;
   erro: boolean;
 };
-
-function formatarNumero(valor: number): string {
-  return valor.toLocaleString("pt-BR");
-}
 
 function Analises() {
   const [campanhas, setCampanhas] = useState<CampanhaApi[]>([]);
@@ -45,12 +25,6 @@ function Analises() {
 
   const [carregandoCampanhas, setCarregandoCampanhas] = useState(true);
   const [erroCampanhas, setErroCampanhas] = useState(false);
-
-  const [indicadoresContatos, setIndicadoresContatos] =
-    useState<IndicadoresAnalises | null>(null);
-
-  const [carregandoContatos, setCarregandoContatos] = useState(true);
-  const [erroContatos, setErroContatos] = useState(false);
 
   useEffect(() => {
     let ativo = true;
@@ -128,41 +102,6 @@ function Analises() {
     };
   }, [campanhaId]);
 
-  useEffect(() => {
-    let ativo = true;
-
-    async function carregarContatos() {
-      try {
-        const analises = await listarAnalises();
-        const resultado = calcularIndicadores(analises);
-
-        if (ativo) {
-          setIndicadoresContatos(resultado);
-          setErroContatos(false);
-        }
-      } catch (erroConsulta) {
-        console.error(
-          "Erro ao carregar indicadores demonstrativos:",
-          erroConsulta,
-        );
-
-        if (ativo) {
-          setErroContatos(true);
-        }
-      } finally {
-        if (ativo) {
-          setCarregandoContatos(false);
-        }
-      }
-    }
-
-    void carregarContatos();
-
-    return () => {
-      ativo = false;
-    };
-  }, []);
-
   const campanhaSelecionada = campanhas.find(
     (campanha) => campanha.id === campanhaId,
   );
@@ -184,68 +123,6 @@ function Analises() {
     setResultadoCancelamentos(null);
   }
 
-  const cardsContatos = indicadoresContatos
-    ? [
-        {
-          titulo: "Análises realizadas",
-          valor: indicadoresContatos.totalAnalises,
-          icone: BarChart3,
-          cor: "text-[#3F7DD9]",
-        },
-        {
-          titulo: "Contatos realizados",
-          valor: indicadoresContatos.contatosRealizados,
-          icone: PhoneCall,
-          cor: "text-green-600",
-        },
-        {
-          titulo: "Contatos fracassados",
-          valor: indicadoresContatos.contatosFracassados,
-          icone: PhoneOff,
-          cor: "text-[#F27D70]",
-        },
-        {
-          titulo: "Interesse imediato",
-          valor: indicadoresContatos.interesseImediato,
-          icone: TrendingUp,
-          cor: "text-[#3F7DD9]",
-        },
-        {
-          titulo: "Interesse futuro",
-          valor: indicadoresContatos.interesseFuturo,
-          icone: TrendingUp,
-          cor: "text-[#F27D70]",
-        },
-        {
-          titulo: "Atendimentos agendados",
-          valor: indicadoresContatos.atendimentosAgendados,
-          icone: CalendarCheck,
-          cor: "text-[#183B70]",
-        },
-      ]
-    : [];
-
-  const resultadosContatos = indicadoresContatos
-    ? [
-        {
-          titulo: "Sem interesse em pagar",
-          valor: indicadoresContatos.semInteresse,
-        },
-        {
-          titulo: "Telefones incorretos",
-          valor: indicadoresContatos.telefonesIncorretos,
-        },
-        {
-          titulo: "Boletos por e-mail",
-          valor: indicadoresContatos.boletosEmail,
-        },
-        {
-          titulo: "Boletos por WhatsApp",
-          valor: indicadoresContatos.boletosWhatsApp,
-        },
-      ]
-    : [];
-
   return (
     <div className="space-y-6">
       <header>
@@ -254,7 +131,7 @@ function Analises() {
         <h2 className="mt-1 text-3xl font-semibold text-slate-800">Análises</h2>
 
         <p className="mt-1 text-base text-slate-500">
-          Indicadores de títulos, cancelamentos e contatos.
+          Indicadores de títulos e cancelamentos por campanha.
         </p>
       </header>
 
@@ -376,136 +253,6 @@ function Analises() {
           </p>
         </div>
       </section>
-
-      <section className="space-y-4">
-        <div>
-          <h3 className="text-xl font-semibold">Análises de Contatos</h3>
-
-          <p className="mt-1 text-sm text-slate-500">
-            Indicadores demonstrativos de contatos e atendimentos, ainda sem
-            integração com o backend.
-          </p>
-        </div>
-
-        {carregandoContatos && (
-          <div
-            role="status"
-            className="rounded-xl border border-slate-100 bg-white p-5"
-          >
-            <p className="text-base text-slate-500">
-              Carregando indicadores demonstrativos...
-            </p>
-          </div>
-        )}
-
-        {!carregandoContatos && erroContatos && (
-          <div
-            role="alert"
-            className="rounded-xl border border-red-100 bg-red-50 p-4"
-          >
-            <p className="text-base text-red-600">
-              Não foi possível carregar os indicadores demonstrativos.
-            </p>
-          </div>
-        )}
-
-        {!carregandoContatos && !erroContatos && indicadoresContatos && (
-          <>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-              {cardsContatos.map((card) => {
-                const Icone = card.icone;
-
-                return (
-                  <article
-                    key={card.titulo}
-                    className="min-w-0 rounded-xl border border-slate-100 bg-white p-4"
-                  >
-                    <Icone size={21} className={card.cor} />
-
-                    <p className="mt-2 min-h-11 text-sm leading-5 text-slate-500">
-                      {card.titulo}
-                    </p>
-
-                    <h4 className="mt-1 text-3xl font-semibold text-slate-800">
-                      {formatarNumero(card.valor)}
-                    </h4>
-                  </article>
-                );
-              })}
-            </div>
-
-            <div className="rounded-xl border border-slate-100 bg-white p-4">
-              <h4 className="text-base font-semibold">
-                Classificação dos resultados
-              </h4>
-
-              <p className="mt-1 text-sm text-slate-500">
-                Dados demonstrativos de contatos.
-              </p>
-
-              <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
-                {resultadosContatos.map((resultado) => (
-                  <div
-                    key={resultado.titulo}
-                    className="min-w-0 rounded-lg bg-slate-50 p-3"
-                  >
-                    <p className="text-sm text-slate-500">{resultado.titulo}</p>
-
-                    <p className="mt-1 text-2xl font-semibold">
-                      {formatarNumero(resultado.valor)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-2">
-              <article className="min-w-0 overflow-hidden rounded-xl border border-slate-100 bg-white p-4">
-                <h4 className="text-base font-semibold">
-                  Distribuição dos resultados
-                </h4>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  Classificação demonstrativa dos resultados.
-                </p>
-
-                <div className="mt-3 min-w-0">
-                  <GraficoResultados
-                    interesseImediato={indicadoresContatos.interesseImediato}
-                    interesseFuturo={indicadoresContatos.interesseFuturo}
-                    semInteresse={indicadoresContatos.semInteresse}
-                    telefonesIncorretos={
-                      indicadoresContatos.telefonesIncorretos
-                    }
-                  />
-                </div>
-              </article>
-
-              <article className="min-w-0 overflow-hidden rounded-xl border border-slate-100 bg-white p-4">
-                <h4 className="text-base font-semibold">
-                  Distribuição dos contatos
-                </h4>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  Contatos demonstrativos realizados e fracassados.
-                </p>
-
-                <div className="mt-3 min-w-0">
-                  <GraficoContatos
-                    realizados={indicadoresContatos.contatosRealizados}
-                    fracassados={indicadoresContatos.contatosFracassados}
-                  />
-                </div>
-              </article>
-            </div>
-          </>
-        )}
-      </section>
-
-      <p className="text-sm text-slate-400">
-        Títulos e cancelamentos consultados no backend da ÁRIA. Indicadores e
-        gráficos de contatos permanecem demonstrativos.
-      </p>
     </div>
   );
 }
