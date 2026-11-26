@@ -11,10 +11,6 @@ const Campanhas = lazy(() => import("./pages/Campanhas"));
 
 const DetalhesCampanha = lazy(() => import("./pages/DetalhesCampanha"));
 
-const Analises = lazy(() => import("./pages/Analises"));
-
-const Relatorios = lazy(() => import("./pages/Relatorios"));
-
 const ImportarArquivos = lazy(() => import("./pages/ImportarArquivos"));
 
 function RedirecionarDetalheCampanha() {
@@ -42,7 +38,7 @@ function App() {
 
       <Route
         path="/analises"
-        element={<Navigate to="/cancelamentos/analises" replace />}
+        element={<Navigate to="/cancelamentos/visao-geral" replace />}
       />
 
       <Route
@@ -52,7 +48,7 @@ function App() {
 
       <Route
         path="/relatorios"
-        element={<Navigate to="/cancelamentos/relatorios" replace />}
+        element={<Navigate to="/cancelamentos/campanhas" replace />}
       />
 
       <Route element={<LayoutAutomacao />}>
@@ -65,11 +61,17 @@ function App() {
           element={<DetalhesCampanha />}
         />
 
-        <Route path="/cancelamentos/analises" element={<Analises />} />
+        <Route
+          path="/cancelamentos/analises"
+          element={<Navigate to="/cancelamentos/visao-geral" replace />}
+        />
 
         <Route path="/cancelamentos/importar" element={<ImportarArquivos />} />
 
-        <Route path="/cancelamentos/relatorios" element={<Relatorios />} />
+        <Route
+          path="/cancelamentos/relatorios"
+          element={<Navigate to="/cancelamentos/campanhas" replace />}
+        />
       </Route>
 
       <Route

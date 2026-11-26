@@ -10,6 +10,7 @@ import {
   Search,
 } from "lucide-react";
 
+import BotaoExportar from "../components/campanhas/BotaoExportar";
 import {
   buscarCampanhaApiPorId,
   buscarIndicadoresCampanhaApi,
@@ -237,11 +238,17 @@ function DetalhesCampanha() {
       <header>
         {voltarCampanhas}
 
-        <h2 className="mt-4 font-titulo text-4xl font-bold">{campanha.nome}</h2>
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="font-titulo text-4xl font-bold">{campanha.nome}</h2>
 
-        <p className="mt-2 text-sm text-texto-secundario">
-          Data de cadastro: {formatarData(campanha.dataCriacao)}
-        </p>
+            <p className="mt-2 text-sm text-texto-secundario">
+              Data de cadastro: {formatarData(campanha.dataCriacao)}
+            </p>
+          </div>
+
+          <BotaoExportar campanha={campanha} indicadores={indicadores} />
+        </div>
       </header>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

@@ -37,5 +37,6 @@ export function usePainelFlutuante() {
     aberto,
     referencia,
     alternar: () => setAberto((atual) => !atual),
+    fechar: () => setAberto(false),
   };
 }

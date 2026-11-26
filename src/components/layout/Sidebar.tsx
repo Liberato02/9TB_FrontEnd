@@ -1,14 +1,5 @@
 import { useState } from "react";
-import {
-  ArrowLeft,
-  ChartNoAxesCombined,
-  FileBarChart,
-  Folder,
-  LayoutGrid,
-  Menu,
-  Upload,
-  X,
-} from "lucide-react";
+import { ArrowLeft, Folder, LayoutGrid, Menu, Upload, X } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 
 import SimboloAria from "../marca/SimboloAria";
@@ -25,19 +16,9 @@ const menu = [
     caminho: "/cancelamentos/campanhas",
   },
   {
-    nome: "Análises",
-    icone: ChartNoAxesCombined,
-    caminho: "/cancelamentos/analises",
-  },
-  {
     nome: "Importar arquivos",
     icone: Upload,
     caminho: "/cancelamentos/importar",
-  },
-  {
-    nome: "Relatórios",
-    icone: FileBarChart,
-    caminho: "/cancelamentos/relatorios",
   },
 ];
 
