@@ -2,8 +2,8 @@ import { Suspense } from "react";
 import { matchPath, Outlet, useLocation } from "react-router-dom";
 
 import type { NavegacaoAutomacao } from "../tipos/NavegacaoAutomacao";
+import AlternarTema from "./AlternarTema";
 import BotaoComunicados from "./BotaoComunicados";
-import MenuUsuario from "./MenuUsuario";
 import Sidebar from "./Sidebar";
 
 type LayoutAutomacaoProps = {
@@ -31,9 +31,9 @@ function LayoutAutomacao({ navegacao }: LayoutAutomacaoProps) {
           </div>
 
           <div className="flex shrink-0 items-center gap-3">
-            <BotaoComunicados />
+            <AlternarTema />
 
-            <MenuUsuario />
+            <BotaoComunicados />
           </div>
         </header>
 

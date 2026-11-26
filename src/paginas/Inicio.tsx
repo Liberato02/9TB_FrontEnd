@@ -5,7 +5,6 @@ import { ArrowRight, CalendarDays } from "lucide-react";
 import { automacoes } from "../automacoes/catalogo";
 import BotaoComunicados from "../compartilhado/componentes/BotaoComunicados";
 import FundoEstrelado from "../compartilhado/componentes/FundoEstrelado";
-import MenuUsuario from "../compartilhado/componentes/MenuUsuario";
 import SimboloAria from "../compartilhado/componentes/SimboloAria";
 
 function saudacaoPeloHorario(data: Date) {
@@ -54,20 +53,16 @@ function Inicio() {
     >
       <FundoEstrelado />
 
-      <header className="relative z-10 flex items-center justify-between px-6 py-6 md:px-12 xl:px-16">
-        <div className="flex items-center gap-3">
-          <SimboloAria className="h-9 w-auto" />
+      <header className="relative z-10 flex items-center justify-between px-6 py-8 md:px-12 xl:px-16">
+        <div className="flex items-center gap-4">
+          <SimboloAria className="h-14 w-auto" />
 
-          <span className="font-titulo text-2xl font-bold tracking-wide text-white">
+          <span className="font-titulo text-4xl font-bold tracking-wide text-white">
             ÁRIA
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
-          <BotaoComunicados />
-
-          <MenuUsuario />
-        </div>
+        <BotaoComunicados />
       </header>
 
       <main className="relative z-10 grid flex-1 items-center gap-12 px-6 py-10 md:px-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] xl:px-16">

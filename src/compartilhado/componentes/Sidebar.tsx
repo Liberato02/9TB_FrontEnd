@@ -28,9 +28,9 @@ function Sidebar({ navegacao }: SidebarProps) {
           aria-label="ÁRIA, ir para o Início"
           className="flex items-center gap-3 rounded-lg"
         >
-          <SimboloAria className="h-9 w-auto" />
+          <SimboloAria className="h-11 w-auto" />
 
-          <span className="font-titulo text-2xl font-bold tracking-wide text-white">
+          <span className="font-titulo text-3xl font-bold tracking-wide text-white">
             ÁRIA
           </span>
         </Link>
