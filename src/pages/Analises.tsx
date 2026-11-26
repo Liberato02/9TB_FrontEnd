@@ -226,7 +226,7 @@ function Analises() {
 
               {campanhaSelecionada && (
                 <Link
-                  to={`/campanhas/${campanhaSelecionada.id}`}
+                  to={`/cancelamentos/campanhas/${campanhaSelecionada.id}`}
                   className="inline-flex items-center gap-2 text-sm font-medium text-destaque hover:underline"
                 >
                   Ver títulos da campanha

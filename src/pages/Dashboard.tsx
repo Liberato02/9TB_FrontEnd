@@ -238,7 +238,7 @@ function Dashboard() {
 
           {campanhaSelecionada && (
             <Link
-              to={`/campanhas/${campanhaSelecionada.id}`}
+              to={`/cancelamentos/campanhas/${campanhaSelecionada.id}`}
               className="inline-flex items-center gap-2 text-sm font-medium text-destaque hover:underline"
             >
               Ver detalhes
@@ -303,7 +303,7 @@ function Dashboard() {
           </div>
 
           <Link
-            to="/campanhas"
+            to="/cancelamentos/campanhas"
             className="inline-flex items-center gap-2 text-sm font-medium text-destaque hover:underline"
           >
             Todas as campanhas
@@ -400,7 +400,7 @@ function Dashboard() {
 
                     <td className="px-3 py-4">
                       <Link
-                        to={`/campanhas/${campanha.id}`}
+                        to={`/cancelamentos/campanhas/${campanha.id}`}
                         className="inline-flex items-center gap-1 whitespace-nowrap font-medium text-destaque hover:underline"
                       >
                         Detalhes

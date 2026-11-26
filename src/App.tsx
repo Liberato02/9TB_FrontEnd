@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 
 import Sidebar from "./components/layout/Sidebar";
 
@@ -16,6 +16,12 @@ const Relatorios = lazy(() => import("./pages/Relatorios"));
 const ImportarArquivos = lazy(() => import("./pages/ImportarArquivos"));
 
 const PaginaNaoEncontrada = lazy(() => import("./pages/PaginaNaoEncontrada"));
+
+function RedirecionarDetalheCampanha() {
+  const { id } = useParams();
+
+  return <Navigate to={`/cancelamentos/campanhas/${id}`} replace />;
+}
 
 function App() {
   return (
@@ -41,17 +47,58 @@ function App() {
           }
         >
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route
+              path="/"
+              element={<Navigate to="/cancelamentos/visao-geral" replace />}
+            />
 
-            <Route path="/campanhas" element={<Campanhas />} />
+            <Route
+              path="/cancelamentos"
+              element={<Navigate to="/cancelamentos/visao-geral" replace />}
+            />
 
-            <Route path="/campanhas/:id" element={<DetalhesCampanha />} />
+            <Route path="/cancelamentos/visao-geral" element={<Dashboard />} />
 
-            <Route path="/analises" element={<Analises />} />
+            <Route path="/cancelamentos/campanhas" element={<Campanhas />} />
 
-            <Route path="/importar-arquivos" element={<ImportarArquivos />} />
+            <Route
+              path="/cancelamentos/campanhas/:id"
+              element={<DetalhesCampanha />}
+            />
 
-            <Route path="/relatorios" element={<Relatorios />} />
+            <Route path="/cancelamentos/analises" element={<Analises />} />
+
+            <Route
+              path="/cancelamentos/importar"
+              element={<ImportarArquivos />}
+            />
+
+            <Route path="/cancelamentos/relatorios" element={<Relatorios />} />
+
+            <Route
+              path="/campanhas"
+              element={<Navigate to="/cancelamentos/campanhas" replace />}
+            />
+
+            <Route
+              path="/campanhas/:id"
+              element={<RedirecionarDetalheCampanha />}
+            />
+
+            <Route
+              path="/analises"
+              element={<Navigate to="/cancelamentos/analises" replace />}
+            />
+
+            <Route
+              path="/importar-arquivos"
+              element={<Navigate to="/cancelamentos/importar" replace />}
+            />
+
+            <Route
+              path="/relatorios"
+              element={<Navigate to="/cancelamentos/relatorios" replace />}
+            />
 
             <Route path="*" element={<PaginaNaoEncontrada />} />
           </Routes>

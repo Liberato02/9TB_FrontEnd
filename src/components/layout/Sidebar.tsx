@@ -19,27 +19,27 @@ const menu = [
   {
     nome: "Visão geral",
     icone: LayoutDashboard,
-    caminho: "/",
+    caminho: "/cancelamentos/visao-geral",
   },
   {
     nome: "Campanhas históricas",
     icone: History,
-    caminho: "/campanhas",
+    caminho: "/cancelamentos/campanhas",
   },
   {
     nome: "Análises",
     icone: ChartNoAxesCombined,
-    caminho: "/analises",
+    caminho: "/cancelamentos/analises",
   },
   {
     nome: "Importar Arquivos",
     icone: FileUp,
-    caminho: "/importar-arquivos",
+    caminho: "/cancelamentos/importar",
   },
   {
     nome: "Relatórios",
     icone: FileBarChart,
-    caminho: "/relatorios",
+    caminho: "/cancelamentos/relatorios",
   },
 ];
 

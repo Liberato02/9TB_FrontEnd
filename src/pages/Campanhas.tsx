@@ -225,7 +225,7 @@ function Campanhas() {
 
                     <td className="px-4 py-4">
                       <Link
-                        to={`/campanhas/${campanha.id}`}
+                        to={`/cancelamentos/campanhas/${campanha.id}`}
                         className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-destaque-suave px-3 py-2 font-medium text-texto transition-colors hover:bg-destaque-suave-forte"
                       >
                         <Eye size={17} />

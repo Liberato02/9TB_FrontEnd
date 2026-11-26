@@ -136,7 +136,7 @@ function DetalhesCampanha() {
 
   const voltarCampanhas = (
     <Link
-      to="/campanhas"
+      to="/cancelamentos/campanhas"
       className="inline-flex items-center gap-2 text-sm text-destaque hover:underline"
     >
       <ArrowLeft size={18} />
