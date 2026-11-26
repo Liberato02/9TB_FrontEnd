@@ -10,16 +10,17 @@ import {
   Search,
 } from "lucide-react";
 
+import BotaoExportar from "../componentes/BotaoExportar";
 import {
   buscarCampanhaApiPorId,
   buscarIndicadoresCampanhaApi,
   listarTitulosCampanhaApi,
   ErroConsultaApi,
-} from "../services/detalhesCampanhaService";
+} from "../servicos/detalhesCampanhaService";
 
-import type { CampanhaApi } from "../types/CampanhaApi";
-import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
-import type { TituloCampanhaApi } from "../types/TituloCampanhaApi";
+import type { CampanhaApi } from "../tipos/CampanhaApi";
+import type { IndicadoresCampanhaApi } from "../tipos/IndicadoresCampanhaApi";
+import type { TituloCampanhaApi } from "../tipos/TituloCampanhaApi";
 
 function formatarNumero(valor: number): string {
   return valor.toLocaleString("pt-BR");
@@ -136,7 +137,7 @@ function DetalhesCampanha() {
 
   const voltarCampanhas = (
     <Link
-      to="/campanhas"
+      to="/cancelamentos/campanhas"
       className="inline-flex items-center gap-2 text-sm text-destaque hover:underline"
     >
       <ArrowLeft size={18} />
@@ -237,20 +238,17 @@ function DetalhesCampanha() {
       <header>
         {voltarCampanhas}
 
-        <p className="mt-4 text-sm text-texto-secundario">
-          ÁRIA / Campanhas / Detalhes
-        </p>
+        <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="font-titulo text-4xl font-bold">{campanha.nome}</h2>
 
-        <h2 className="mt-1 font-titulo text-4xl font-bold">{campanha.nome}</h2>
+            <p className="mt-2 text-sm text-texto-secundario">
+              Data de cadastro: {formatarData(campanha.dataCriacao)}
+            </p>
+          </div>
 
-        <p className="mt-2 text-sm text-texto-secundario">
-          Data de cadastro: {formatarData(campanha.dataCriacao)}
-        </p>
-
-        <p className="mt-2 text-sm text-texto-secundario">
-          Consulte os títulos vinculados à campanha e os cancelamentos
-          encontrados nos documentos importados.
-        </p>
+          <BotaoExportar campanha={campanha} indicadores={indicadores} />
+        </div>
       </header>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">

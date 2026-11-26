@@ -15,7 +15,7 @@ function PaginaNaoEncontrada() {
 
         <p className="mt-3 text-sm leading-6 text-texto-secundario">
           O endereço informado não corresponde a nenhuma página disponível na
-          ÁRIA. Verifique o endereço ou retorne à Visão geral.
+          ÁRIA. Verifique o endereço ou volte ao Início.
         </p>
 
         <Link
@@ -23,7 +23,7 @@ function PaginaNaoEncontrada() {
           className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-marca px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-marca-forte"
         >
           <House size={18} />
-          Voltar à Visão geral
+          Voltar ao Início
         </Link>
       </div>
     </div>

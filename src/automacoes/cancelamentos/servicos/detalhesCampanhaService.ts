@@ -1,7 +1,7 @@
 
-import type { CampanhaApi } from "../types/CampanhaApi";
-import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
-import type { TituloCampanhaApi } from "../types/TituloCampanhaApi";
+import type { CampanhaApi } from "../tipos/CampanhaApi";
+import type { IndicadoresCampanhaApi } from "../tipos/IndicadoresCampanhaApi";
+import type { TituloCampanhaApi } from "../tipos/TituloCampanhaApi";
 
 // Classe para identificar erros retornados pela API.
 export class ErroConsultaApi extends Error {

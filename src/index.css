@@ -65,7 +65,8 @@
   --aria-erro-suave-forte: #FEE4E2;
 }
 
-:root[data-tema="escuro"] {
+:root[data-tema="escuro"],
+[data-tema="escuro"] {
   color-scheme: dark;
 
   --aria-fundo: #060F1E;

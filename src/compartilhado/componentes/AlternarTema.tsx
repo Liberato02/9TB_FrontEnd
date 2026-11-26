@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Moon } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 
 type Tema = "claro" | "escuro";
 
@@ -32,25 +32,11 @@ function AlternarTema() {
     <button
       type="button"
       onClick={alternar}
-      aria-pressed={escuro}
-      className="flex min-h-11 w-full items-center gap-3 rounded-xl px-4 py-2 text-sm font-medium text-texto-secundario transition-colors hover:bg-superficie-suave hover:text-texto"
+      aria-label={escuro ? "Usar tema claro" : "Usar tema escuro"}
+      title={escuro ? "Usar tema claro" : "Usar tema escuro"}
+      className="flex h-10 w-10 items-center justify-center rounded-lg border border-borda-forte bg-superficie-suave text-texto transition-colors hover:bg-destaque-suave"
     >
-      <Moon size={19} className="shrink-0" />
-
-      <span>Tema escuro</span>
-
-      <span
-        aria-hidden="true"
-        className={`ml-auto flex h-6 w-11 shrink-0 items-center rounded-md p-0.5 transition-colors ${
-          escuro ? "bg-marca" : "bg-borda-forte"
-        }`}
-      >
-        <span
-          className={`h-5 w-5 rounded bg-white shadow-sm transition-transform ${
-            escuro ? "translate-x-5" : "translate-x-0"
-          }`}
-        />
-      </span>
+      {escuro ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   );
 }

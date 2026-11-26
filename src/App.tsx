@@ -1,63 +1,97 @@
-import { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { lazy } from "react";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 
-import Sidebar from "./components/layout/Sidebar";
+import { navegacaoCancelamentos } from "./automacoes/cancelamentos/navegacao";
+import LayoutAutomacao from "./compartilhado/componentes/LayoutAutomacao";
+import Inicio from "./paginas/Inicio";
+import PaginaNaoEncontrada from "./paginas/PaginaNaoEncontrada";
 
-const Dashboard = lazy(() => import("./pages/Dashboard"));
+const VisaoGeral = lazy(
+  () => import("./automacoes/cancelamentos/telas/VisaoGeral"),
+);
 
-const Campanhas = lazy(() => import("./pages/Campanhas"));
+const Campanhas = lazy(
+  () => import("./automacoes/cancelamentos/telas/Campanhas"),
+);
 
-const DetalhesCampanha = lazy(() => import("./pages/DetalhesCampanha"));
+const DetalhesCampanha = lazy(
+  () => import("./automacoes/cancelamentos/telas/DetalhesCampanha"),
+);
 
-const Analises = lazy(() => import("./pages/Analises"));
+const ImportarArquivos = lazy(
+  () => import("./automacoes/cancelamentos/telas/ImportarArquivos"),
+);
 
-const Relatorios = lazy(() => import("./pages/Relatorios"));
+function RedirecionarDetalheCampanha() {
+  const { id } = useParams();
 
-const ImportarArquivos = lazy(() => import("./pages/ImportarArquivos"));
-
-const PaginaNaoEncontrada = lazy(() => import("./pages/PaginaNaoEncontrada"));
+  return <Navigate to={`/cancelamentos/campanhas/${id}`} replace />;
+}
 
 function App() {
   return (
-    <div className="min-h-screen bg-fundo text-texto md:flex">
-      <Sidebar />
+    <Routes>
+      <Route path="/" element={<Inicio />} />
 
-      <main className="min-w-0 flex-1 p-6 md:p-10">
-        <Suspense
-          fallback={
-            <div
-              role="status"
-              aria-live="polite"
-              className="flex min-h-[50vh] items-center justify-center"
-            >
-              <div className="rounded-xl border border-borda bg-superficie px-8 py-6 text-center">
-                <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-destaque-suave-forte border-t-destaque" />
+      <Route
+        path="/cancelamentos"
+        element={<Navigate to="/cancelamentos/visao-geral" replace />}
+      />
 
-                <p className="mt-4 text-sm text-texto-secundario">
-                  Carregando página...
-                </p>
-              </div>
-            </div>
-          }
-        >
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
+      <Route
+        path="/campanhas"
+        element={<Navigate to="/cancelamentos/campanhas" replace />}
+      />
 
-            <Route path="/campanhas" element={<Campanhas />} />
+      <Route path="/campanhas/:id" element={<RedirecionarDetalheCampanha />} />
 
-            <Route path="/campanhas/:id" element={<DetalhesCampanha />} />
+      <Route
+        path="/analises"
+        element={<Navigate to="/cancelamentos/visao-geral" replace />}
+      />
 
-            <Route path="/analises" element={<Analises />} />
+      <Route
+        path="/importar-arquivos"
+        element={<Navigate to="/cancelamentos/importar" replace />}
+      />
 
-            <Route path="/importar-arquivos" element={<ImportarArquivos />} />
+      <Route
+        path="/relatorios"
+        element={<Navigate to="/cancelamentos/campanhas" replace />}
+      />
 
-            <Route path="/relatorios" element={<Relatorios />} />
+      <Route element={<LayoutAutomacao navegacao={navegacaoCancelamentos} />}>
+        <Route path="/cancelamentos/visao-geral" element={<VisaoGeral />} />
 
-            <Route path="*" element={<PaginaNaoEncontrada />} />
-          </Routes>
-        </Suspense>
-      </main>
-    </div>
+        <Route path="/cancelamentos/campanhas" element={<Campanhas />} />
+
+        <Route
+          path="/cancelamentos/campanhas/:id"
+          element={<DetalhesCampanha />}
+        />
+
+        <Route
+          path="/cancelamentos/analises"
+          element={<Navigate to="/cancelamentos/visao-geral" replace />}
+        />
+
+        <Route path="/cancelamentos/importar" element={<ImportarArquivos />} />
+
+        <Route
+          path="/cancelamentos/relatorios"
+          element={<Navigate to="/cancelamentos/campanhas" replace />}
+        />
+      </Route>
+
+      <Route
+        path="*"
+        element={
+          <div className="min-h-screen bg-fundo p-6 text-texto">
+            <PaginaNaoEncontrada />
+          </div>
+        }
+      />
+    </Routes>
   );
 }
 
