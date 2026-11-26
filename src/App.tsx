@@ -1,7 +1,8 @@
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { Navigate, Route, Routes, useParams } from "react-router-dom";
 
-import Sidebar from "./components/layout/Sidebar";
+import LayoutAutomacao from "./components/layout/LayoutAutomacao";
+import Inicio from "./pages/Inicio";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 
@@ -25,86 +26,55 @@ function RedirecionarDetalheCampanha() {
 
 function App() {
   return (
-    <div className="min-h-screen bg-fundo text-texto md:flex">
-      <Sidebar />
+    <Routes>
+      <Route path="/" element={<Inicio />} />
 
-      <main className="min-w-0 flex-1 p-6 md:p-10">
-        <Suspense
-          fallback={
-            <div
-              role="status"
-              aria-live="polite"
-              className="flex min-h-[50vh] items-center justify-center"
-            >
-              <div className="rounded-xl border border-borda bg-superficie px-8 py-6 text-center">
-                <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-destaque-suave-forte border-t-destaque" />
+      <Route
+        path="/cancelamentos"
+        element={<Navigate to="/cancelamentos/visao-geral" replace />}
+      />
 
-                <p className="mt-4 text-sm text-texto-secundario">
-                  Carregando página...
-                </p>
-              </div>
-            </div>
-          }
-        >
-          <Routes>
-            <Route
-              path="/"
-              element={<Navigate to="/cancelamentos/visao-geral" replace />}
-            />
+      <Route
+        path="/campanhas"
+        element={<Navigate to="/cancelamentos/campanhas" replace />}
+      />
 
-            <Route
-              path="/cancelamentos"
-              element={<Navigate to="/cancelamentos/visao-geral" replace />}
-            />
+      <Route path="/campanhas/:id" element={<RedirecionarDetalheCampanha />} />
 
-            <Route path="/cancelamentos/visao-geral" element={<Dashboard />} />
+      <Route
+        path="/analises"
+        element={<Navigate to="/cancelamentos/analises" replace />}
+      />
 
-            <Route path="/cancelamentos/campanhas" element={<Campanhas />} />
+      <Route
+        path="/importar-arquivos"
+        element={<Navigate to="/cancelamentos/importar" replace />}
+      />
 
-            <Route
-              path="/cancelamentos/campanhas/:id"
-              element={<DetalhesCampanha />}
-            />
+      <Route
+        path="/relatorios"
+        element={<Navigate to="/cancelamentos/relatorios" replace />}
+      />
 
-            <Route path="/cancelamentos/analises" element={<Analises />} />
+      <Route element={<LayoutAutomacao />}>
+        <Route path="/cancelamentos/visao-geral" element={<Dashboard />} />
 
-            <Route
-              path="/cancelamentos/importar"
-              element={<ImportarArquivos />}
-            />
+        <Route path="/cancelamentos/campanhas" element={<Campanhas />} />
 
-            <Route path="/cancelamentos/relatorios" element={<Relatorios />} />
+        <Route
+          path="/cancelamentos/campanhas/:id"
+          element={<DetalhesCampanha />}
+        />
 
-            <Route
-              path="/campanhas"
-              element={<Navigate to="/cancelamentos/campanhas" replace />}
-            />
+        <Route path="/cancelamentos/analises" element={<Analises />} />
 
-            <Route
-              path="/campanhas/:id"
-              element={<RedirecionarDetalheCampanha />}
-            />
+        <Route path="/cancelamentos/importar" element={<ImportarArquivos />} />
 
-            <Route
-              path="/analises"
-              element={<Navigate to="/cancelamentos/analises" replace />}
-            />
+        <Route path="/cancelamentos/relatorios" element={<Relatorios />} />
 
-            <Route
-              path="/importar-arquivos"
-              element={<Navigate to="/cancelamentos/importar" replace />}
-            />
-
-            <Route
-              path="/relatorios"
-              element={<Navigate to="/cancelamentos/relatorios" replace />}
-            />
-
-            <Route path="*" element={<PaginaNaoEncontrada />} />
-          </Routes>
-        </Suspense>
-      </main>
-    </div>
+        <Route path="*" element={<PaginaNaoEncontrada />} />
+      </Route>
+    </Routes>
   );
 }
 
