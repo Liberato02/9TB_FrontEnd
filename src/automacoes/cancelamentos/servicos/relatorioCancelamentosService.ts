@@ -17,8 +17,8 @@ import {
 import { jsPDF } from "jspdf";
 import ExcelJS from "exceljs";
 
-import type { CampanhaApi } from "../types/CampanhaApi";
-import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
+import type { CampanhaApi } from "../tipos/CampanhaApi";
+import type { IndicadoresCampanhaApi } from "../tipos/IndicadoresCampanhaApi";
 
 type CampanhaRelatorio = Pick<CampanhaApi, "id" | "nome">;
 

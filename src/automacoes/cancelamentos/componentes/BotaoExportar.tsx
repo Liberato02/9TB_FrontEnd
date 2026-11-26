@@ -2,9 +2,9 @@ import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { ChevronDown, Download, FileSpreadsheet, FileText } from "lucide-react";
 
-import { usePainelFlutuante } from "../../hooks/usePainelFlutuante";
-import type { CampanhaApi } from "../../types/CampanhaApi";
-import type { IndicadoresCampanhaApi } from "../../types/IndicadoresCampanhaApi";
+import { usePainelFlutuante } from "../../../compartilhado/hooks/usePainelFlutuante";
+import type { CampanhaApi } from "../tipos/CampanhaApi";
+import type { IndicadoresCampanhaApi } from "../tipos/IndicadoresCampanhaApi";
 
 type Formato = "word" | "pdf" | "excel";
 
@@ -30,9 +30,7 @@ function BotaoExportar({ campanha, indicadores }: BotaoExportarProps) {
     setExportando(formato);
 
     try {
-      const servico = await import(
-        "../../services/relatorioCancelamentosService"
-      );
+      const servico = await import("../servicos/relatorioCancelamentosService");
       const dados = { campanha, indicadores };
 
       if (formato === "word") {

@@ -1,6 +1,6 @@
 
-import type { ImportacaoCsvApi } from "../types/ImportacaoCsvApi";
-import type { ImportacaoPdfApi } from "../types/ImportacaoPdfApi";
+import type { ImportacaoCsvApi } from "../tipos/ImportacaoCsvApi";
+import type { ImportacaoPdfApi } from "../tipos/ImportacaoPdfApi";
 
 // Erro HTTP retornado pelo backend.
 export class ErroImportacaoApi extends Error {

@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FolderKanban, ArrowRight, Info } from "lucide-react";
 
-import IndicadoresCancelamentos from "../components/analises/IndicadoresCancelamentos";
+import IndicadoresCancelamentos from "../componentes/IndicadoresCancelamentos";
 
-import { listarCampanhasApi } from "../services/campanhaService";
-import { buscarIndicadoresCampanhaApi } from "../services/detalhesCampanhaService";
+import { listarCampanhasApi } from "../servicos/campanhaService";
+import { buscarIndicadoresCampanhaApi } from "../servicos/detalhesCampanhaService";
 
-import type { CampanhaApi } from "../types/CampanhaApi";
-import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
+import type { CampanhaApi } from "../tipos/CampanhaApi";
+import type { IndicadoresCampanhaApi } from "../tipos/IndicadoresCampanhaApi";
 
 function formatarNumero(valor: number): string {
   return valor.toLocaleString("pt-BR");
@@ -20,7 +20,7 @@ function formatarPercentual(valor: number): string {
   })}%`;
 }
 
-function Dashboard() {
+function VisaoGeral() {
   const [campanhas, setCampanhas] = useState<CampanhaApi[]>([]);
   const [campanhaId, setCampanhaId] = useState<number | null>(null);
 
@@ -416,4 +416,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default VisaoGeral;

@@ -1,18 +1,24 @@
 import { Suspense } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { matchPath, Outlet, useLocation } from "react-router-dom";
 
-import { encontrarPaginaCancelamentos } from "../../automacoes/paginasCancelamentos";
+import type { NavegacaoAutomacao } from "../tipos/NavegacaoAutomacao";
 import BotaoComunicados from "./BotaoComunicados";
 import MenuUsuario from "./MenuUsuario";
 import Sidebar from "./Sidebar";
 
-function LayoutAutomacao() {
+type LayoutAutomacaoProps = {
+  navegacao: NavegacaoAutomacao;
+};
+
+function LayoutAutomacao({ navegacao }: LayoutAutomacaoProps) {
   const { pathname } = useLocation();
-  const pagina = encontrarPaginaCancelamentos(pathname);
+  const pagina = navegacao.paginas.find((item) =>
+    matchPath(item.caminho, pathname),
+  );
 
   return (
     <div className="min-h-screen bg-fundo text-texto md:flex">
-      <Sidebar />
+      <Sidebar navegacao={navegacao} />
 
       <div className="min-w-0 flex-1">
         <header className="flex items-start justify-between gap-6 border-b border-borda bg-superficie px-6 py-6 md:px-10">

@@ -9,15 +9,15 @@ import {
   X,
 } from "lucide-react";
 
-import ResultadoImportacao from "../components/importacao/ResultadoImportacao";
+import ResultadoImportacao from "../componentes/ResultadoImportacao";
 
 import {
   importarTitulosCsv,
   importarCancelamentosPdf,
-} from "../services/importacaoService";
+} from "../servicos/importacaoService";
 
-import type { ImportacaoCsvApi } from "../types/ImportacaoCsvApi";
-import type { ImportacaoPdfApi } from "../types/ImportacaoPdfApi";
+import type { ImportacaoCsvApi } from "../tipos/ImportacaoCsvApi";
+import type { ImportacaoPdfApi } from "../tipos/ImportacaoPdfApi";
 
 type TipoArquivo = "csv" | "pdf";
 

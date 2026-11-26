@@ -10,17 +10,17 @@ import {
   Search,
 } from "lucide-react";
 
-import BotaoExportar from "../components/campanhas/BotaoExportar";
+import BotaoExportar from "../componentes/BotaoExportar";
 import {
   buscarCampanhaApiPorId,
   buscarIndicadoresCampanhaApi,
   listarTitulosCampanhaApi,
   ErroConsultaApi,
-} from "../services/detalhesCampanhaService";
+} from "../servicos/detalhesCampanhaService";
 
-import type { CampanhaApi } from "../types/CampanhaApi";
-import type { IndicadoresCampanhaApi } from "../types/IndicadoresCampanhaApi";
-import type { TituloCampanhaApi } from "../types/TituloCampanhaApi";
+import type { CampanhaApi } from "../tipos/CampanhaApi";
+import type { IndicadoresCampanhaApi } from "../tipos/IndicadoresCampanhaApi";
+import type { TituloCampanhaApi } from "../tipos/TituloCampanhaApi";
 
 function formatarNumero(valor: number): string {
   return valor.toLocaleString("pt-BR");

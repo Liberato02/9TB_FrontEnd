@@ -1,6 +1,6 @@
 import { User } from "lucide-react";
 
-import { usePainelFlutuante } from "../../hooks/usePainelFlutuante";
+import { usePainelFlutuante } from "../hooks/usePainelFlutuante";
 import AlternarTema from "./AlternarTema";
 
 function MenuUsuario() {

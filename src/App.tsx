@@ -1,17 +1,26 @@
 import { lazy } from "react";
 import { Navigate, Route, Routes, useParams } from "react-router-dom";
 
-import LayoutAutomacao from "./components/layout/LayoutAutomacao";
-import Inicio from "./pages/Inicio";
-import PaginaNaoEncontrada from "./pages/PaginaNaoEncontrada";
+import { navegacaoCancelamentos } from "./automacoes/cancelamentos/navegacao";
+import LayoutAutomacao from "./compartilhado/componentes/LayoutAutomacao";
+import Inicio from "./paginas/Inicio";
+import PaginaNaoEncontrada from "./paginas/PaginaNaoEncontrada";
 
-const Dashboard = lazy(() => import("./pages/Dashboard"));
+const VisaoGeral = lazy(
+  () => import("./automacoes/cancelamentos/telas/VisaoGeral"),
+);
 
-const Campanhas = lazy(() => import("./pages/Campanhas"));
+const Campanhas = lazy(
+  () => import("./automacoes/cancelamentos/telas/Campanhas"),
+);
 
-const DetalhesCampanha = lazy(() => import("./pages/DetalhesCampanha"));
+const DetalhesCampanha = lazy(
+  () => import("./automacoes/cancelamentos/telas/DetalhesCampanha"),
+);
 
-const ImportarArquivos = lazy(() => import("./pages/ImportarArquivos"));
+const ImportarArquivos = lazy(
+  () => import("./automacoes/cancelamentos/telas/ImportarArquivos"),
+);
 
 function RedirecionarDetalheCampanha() {
   const { id } = useParams();
@@ -51,8 +60,8 @@ function App() {
         element={<Navigate to="/cancelamentos/campanhas" replace />}
       />
 
-      <Route element={<LayoutAutomacao />}>
-        <Route path="/cancelamentos/visao-geral" element={<Dashboard />} />
+      <Route element={<LayoutAutomacao navegacao={navegacaoCancelamentos} />}>
+        <Route path="/cancelamentos/visao-geral" element={<VisaoGeral />} />
 
         <Route path="/cancelamentos/campanhas" element={<Campanhas />} />
 

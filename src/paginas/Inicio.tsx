@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 import { ArrowRight, CalendarDays } from "lucide-react";
 
 import { automacoes } from "../automacoes/catalogo";
-import BotaoComunicados from "../components/layout/BotaoComunicados";
-import FundoEstrelado from "../components/layout/FundoEstrelado";
-import MenuUsuario from "../components/layout/MenuUsuario";
-import SimboloAria from "../components/marca/SimboloAria";
+import BotaoComunicados from "../compartilhado/componentes/BotaoComunicados";
+import FundoEstrelado from "../compartilhado/componentes/FundoEstrelado";
+import MenuUsuario from "../compartilhado/componentes/MenuUsuario";
+import SimboloAria from "../compartilhado/componentes/SimboloAria";
 
 function saudacaoPeloHorario(data: Date) {
   const hora = data.getHours();

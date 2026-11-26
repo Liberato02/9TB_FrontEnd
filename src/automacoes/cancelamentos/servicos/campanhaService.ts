@@ -1,4 +1,4 @@
-import type { CampanhaApi } from "../types/CampanhaApi";
+import type { CampanhaApi } from "../tipos/CampanhaApi";
 
 export async function listarCampanhasApi(): Promise<CampanhaApi[]> {
   const resposta = await fetch("/api/campanhas", {

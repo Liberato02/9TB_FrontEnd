@@ -1,28 +1,15 @@
 import { useState } from "react";
-import { ArrowLeft, Folder, LayoutGrid, Menu, Upload, X } from "lucide-react";
+import { ArrowLeft, Menu, X } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 
-import SimboloAria from "../marca/SimboloAria";
+import type { NavegacaoAutomacao } from "../tipos/NavegacaoAutomacao";
+import SimboloAria from "./SimboloAria";
 
-const menu = [
-  {
-    nome: "Visão geral",
-    icone: LayoutGrid,
-    caminho: "/cancelamentos/visao-geral",
-  },
-  {
-    nome: "Campanhas",
-    icone: Folder,
-    caminho: "/cancelamentos/campanhas",
-  },
-  {
-    nome: "Importar arquivos",
-    icone: Upload,
-    caminho: "/cancelamentos/importar",
-  },
-];
+type SidebarProps = {
+  navegacao: NavegacaoAutomacao;
+};
 
-function Sidebar() {
+function Sidebar({ navegacao }: SidebarProps) {
   const [menuAberto, setMenuAberto] = useState(false);
 
   function fecharMenu() {
@@ -74,11 +61,11 @@ function Sidebar() {
         </Link>
 
         <p className="mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-coral-texto">
-          Campanhas de cancelamento
+          {navegacao.nome}
         </p>
 
-        <nav aria-label="Campanhas de cancelamento" className="mt-3 space-y-1">
-          {menu.map((item) => {
+        <nav aria-label={navegacao.nome} className="mt-3 space-y-1">
+          {navegacao.menu.map((item) => {
             const Icone = item.icone;
 
             return (

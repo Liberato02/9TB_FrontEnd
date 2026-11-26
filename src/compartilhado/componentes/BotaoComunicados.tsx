@@ -1,6 +1,6 @@
 import { Bell, BellOff } from "lucide-react";
 
-import { usePainelFlutuante } from "../../hooks/usePainelFlutuante";
+import { usePainelFlutuante } from "../hooks/usePainelFlutuante";
 
 function BotaoComunicados() {
   const { aberto, referencia, alternar } = usePainelFlutuante();

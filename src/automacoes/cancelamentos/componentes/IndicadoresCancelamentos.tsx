@@ -1,6 +1,6 @@
 import { FileText, CheckCircle2, FileQuestion, Percent } from "lucide-react";
 
-import type { IndicadoresCampanhaApi } from "../../types/IndicadoresCampanhaApi";
+import type { IndicadoresCampanhaApi } from "../tipos/IndicadoresCampanhaApi";
 
 type Props = {
   indicadores: IndicadoresCampanhaApi;

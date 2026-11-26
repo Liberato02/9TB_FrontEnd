@@ -3,8 +3,8 @@ import { CalendarDays, CalendarClock, Search, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { listarCampanhasApi } from "../services/campanhaService";
-import type { CampanhaApi } from "../types/CampanhaApi";
+import { listarCampanhasApi } from "../servicos/campanhaService";
+import type { CampanhaApi } from "../tipos/CampanhaApi";
 
 function formatarData(data: string): string {
   const resultado = /^(\d{4})-(\d{2})-(\d{2})/.exec(data);
