@@ -221,17 +221,6 @@ function Relatorios() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-sm text-texto-secundario">ÁRIA / Inteligência de Dados</p>
-
-        <h2 className="mt-1 font-titulo text-4xl font-bold">Relatórios</h2>
-
-        <p className="mt-2 text-sm text-texto-secundario">
-          Exporte os indicadores de títulos e cancelamentos de uma campanha em
-          Word, PDF ou Excel.
-        </p>
-      </header>
-
       <section className="rounded-xl border border-borda bg-superficie p-5">
         <label htmlFor="campanha-relatorio" className="text-lg font-semibold">
           Selecionar campanha

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useParams } from "react-router-dom";
 
 import LayoutAutomacao from "./components/layout/LayoutAutomacao";
 import Inicio from "./pages/Inicio";
+import PaginaNaoEncontrada from "./pages/PaginaNaoEncontrada";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 
@@ -15,8 +16,6 @@ const Analises = lazy(() => import("./pages/Analises"));
 const Relatorios = lazy(() => import("./pages/Relatorios"));
 
 const ImportarArquivos = lazy(() => import("./pages/ImportarArquivos"));
-
-const PaginaNaoEncontrada = lazy(() => import("./pages/PaginaNaoEncontrada"));
 
 function RedirecionarDetalheCampanha() {
   const { id } = useParams();
@@ -71,9 +70,16 @@ function App() {
         <Route path="/cancelamentos/importar" element={<ImportarArquivos />} />
 
         <Route path="/cancelamentos/relatorios" element={<Relatorios />} />
-
-        <Route path="*" element={<PaginaNaoEncontrada />} />
       </Route>
+
+      <Route
+        path="*"
+        element={
+          <div className="min-h-screen bg-fundo p-6 text-texto">
+            <PaginaNaoEncontrada />
+          </div>
+        }
+      />
     </Routes>
   );
 }

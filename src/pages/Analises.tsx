@@ -125,16 +125,6 @@ function Analises() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-sm text-texto-secundario">ÁRIA / Inteligência de Dados</p>
-
-        <h2 className="mt-1 font-titulo text-4xl font-bold text-texto">Análises</h2>
-
-        <p className="mt-1 text-base text-texto-secundario">
-          Indicadores de títulos e cancelamentos por campanha.
-        </p>
-      </header>
-
       <section className="space-y-4">
         <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
           <div>

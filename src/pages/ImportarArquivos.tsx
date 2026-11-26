@@ -189,16 +189,6 @@ function ImportarArquivos() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-sm text-texto-secundario">ÁRIA / Inteligência de Dados</p>
-
-        <h2 className="mt-2 font-titulo text-4xl font-bold">Importação de Arquivos</h2>
-
-        <p className="mt-2 text-sm text-texto-secundario">
-          Importe títulos e cancelamentos para o banco de dados da ÁRIA.
-        </p>
-      </header>
-
       <section className="grid grid-cols-1 items-start gap-5 xl:grid-cols-2">
         <article className="rounded-2xl border border-borda bg-superficie p-6">
           <div className="flex items-center gap-3">

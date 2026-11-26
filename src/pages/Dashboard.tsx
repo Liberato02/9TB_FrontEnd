@@ -158,17 +158,6 @@ function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <p className="text-sm text-texto-secundario">ÁRIA / Painel de Inteligência</p>
-
-        <h2 className="mt-1 font-titulo text-4xl font-bold">Visão Geral</h2>
-
-        <p className="mt-1 text-base text-texto-secundario">
-          Acompanhe as campanhas cadastradas e os indicadores de cancelamentos
-          encontrados nos arquivos importados.
-        </p>
-      </header>
-
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <article
           className="flex items-center gap-4 rounded-xl border border-borda bg-superficie p-5"

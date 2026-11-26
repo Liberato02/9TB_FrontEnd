@@ -100,17 +100,6 @@ function Campanhas() {
 
   return (
     <div>
-      <header className="mb-8">
-        <p className="text-sm text-texto-secundario">ÁRIA / Inteligência de Dados</p>
-
-        <h2 className="mt-2 font-titulo text-4xl font-bold">Campanhas históricas</h2>
-
-        <p className="mt-2 text-sm text-texto-secundario">
-          Consulte as campanhas registradas no sistema. Os dados desta listagem
-          são obtidos do backend da ÁRIA.
-        </p>
-      </header>
-
       <section className="mb-6 rounded-2xl border border-borda bg-superficie p-6">
         <div className="flex items-center gap-3">
           <Search size={20} className="text-texto-suave" />

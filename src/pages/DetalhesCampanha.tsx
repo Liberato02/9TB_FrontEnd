@@ -237,19 +237,10 @@ function DetalhesCampanha() {
       <header>
         {voltarCampanhas}
 
-        <p className="mt-4 text-sm text-texto-secundario">
-          ÁRIA / Campanhas / Detalhes
-        </p>
-
-        <h2 className="mt-1 font-titulo text-4xl font-bold">{campanha.nome}</h2>
+        <h2 className="mt-4 font-titulo text-4xl font-bold">{campanha.nome}</h2>
 
         <p className="mt-2 text-sm text-texto-secundario">
           Data de cadastro: {formatarData(campanha.dataCriacao)}
-        </p>
-
-        <p className="mt-2 text-sm text-texto-secundario">
-          Consulte os títulos vinculados à campanha e os cancelamentos
-          encontrados nos documentos importados.
         </p>
       </header>
 
