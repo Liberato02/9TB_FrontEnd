@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, CalendarDays } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { automacoes } from "../automacoes/catalogo";
 import BotaoComunicados from "../compartilhado/componentes/BotaoComunicados";
@@ -11,14 +11,14 @@ function saudacaoPeloHorario(data: Date) {
   const hora = data.getHours();
 
   if (hora >= 5 && hora < 12) {
-    return "Bom dia.";
+    return "Bom dia";
   }
 
   if (hora >= 12 && hora < 18) {
-    return "Boa tarde.";
+    return "Boa tarde";
   }
 
-  return "Boa noite.";
+  return "Boa noite";
 }
 
 function formatarData(data: Date) {
@@ -68,21 +68,15 @@ function Inicio() {
       <main className="relative z-10 grid flex-1 items-center gap-12 px-6 py-10 md:px-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] xl:px-16">
         <section>
           <p className="text-sm font-medium text-coral-texto">
-            9º Tabelionato de Protesto de São Paulo
+            {formatarData(agora)}
           </p>
 
-          <h1 className="mt-5 font-titulo text-7xl font-bold leading-none text-white md:text-8xl xl:text-9xl">
+          <h1 className="mt-4 font-titulo text-6xl font-bold leading-none text-white xl:text-7xl">
             {saudacaoPeloHorario(agora)}
           </h1>
 
-          <p className="mt-6 text-lg text-texto-secundario">
+          <p className="mt-5 text-lg text-texto-secundario">
             Escolha uma automação para começar.
-          </p>
-
-          <p className="mt-6 flex items-center gap-2 text-sm text-texto-secundario">
-            <CalendarDays size={16} className="shrink-0" />
-
-            {formatarData(agora)}
           </p>
         </section>
 
