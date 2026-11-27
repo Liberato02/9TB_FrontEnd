@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { matchPath, Outlet, useLocation } from "react-router-dom";
 
 import type { NavegacaoAutomacao } from "../tipos/NavegacaoAutomacao";
@@ -12,18 +12,28 @@ type LayoutAutomacaoProps = {
 
 function LayoutAutomacao({ navegacao }: LayoutAutomacaoProps) {
   const { pathname } = useLocation();
+  const painelRef = useRef<HTMLElement>(null);
   const pagina = navegacao.paginas.find((item) =>
     matchPath(item.caminho, pathname),
   );
 
+  useEffect(() => {
+    painelRef.current?.scrollTo({ top: 0 });
+  }, [pathname]);
+
   return (
-    <div className="min-h-screen bg-fundo text-texto md:flex">
+    <div className="min-h-screen bg-noite md:flex md:h-screen md:overflow-hidden">
       <Sidebar navegacao={navegacao} />
 
-      <div className="min-w-0 flex-1">
-        <header className="flex items-start justify-between gap-6 border-b border-borda bg-superficie px-6 py-6 md:px-10">
-          <div className="min-w-0">
-            <h1 className="font-titulo text-4xl font-bold">{pagina?.titulo}</h1>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header
+          data-tema="escuro"
+          className="flex items-start justify-between gap-6 px-6 pt-6 pb-5 text-texto md:pr-8 md:pl-4"
+        >
+          <div key={pathname} className="animacao-entrada min-w-0">
+            <h1 className="font-titulo text-4xl font-bold text-white">
+              {pagina?.titulo}
+            </h1>
 
             <p className="mt-1 text-sm text-texto-secundario">
               {pagina?.descricao}
@@ -37,7 +47,10 @@ function LayoutAutomacao({ navegacao }: LayoutAutomacaoProps) {
           </div>
         </header>
 
-        <main className="p-6 md:p-10">
+        <main
+          ref={painelRef}
+          className="flex-1 rounded-t-2xl bg-fundo p-6 text-texto md:mr-3 md:mb-3 md:overflow-y-auto md:rounded-2xl md:p-10"
+        >
           <Suspense
             fallback={
               <div
@@ -55,7 +68,9 @@ function LayoutAutomacao({ navegacao }: LayoutAutomacaoProps) {
               </div>
             }
           >
-            <Outlet />
+            <div key={pathname} className="animacao-entrada">
+              <Outlet />
+            </div>
           </Suspense>
         </main>
       </div>
