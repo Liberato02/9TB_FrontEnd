@@ -1,16 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import {
-  ArrowLeft,
-  FileText,
-  CheckCircle2,
-  SearchX,
-  Percent,
-  Search,
-} from "lucide-react";
+import { ArrowLeft, Info, Search, SearchX } from "lucide-react";
 
 import BotaoExportar from "../componentes/BotaoExportar";
+import IndicadoresCancelamentos from "../componentes/IndicadoresCancelamentos";
 import {
   buscarCampanhaApiPorId,
   buscarIndicadoresCampanhaApi,
@@ -20,10 +14,29 @@ import {
 
 import type { CampanhaApi } from "../tipos/CampanhaApi";
 import type { IndicadoresCampanhaApi } from "../tipos/IndicadoresCampanhaApi";
-import type { TituloCampanhaApi } from "../tipos/TituloCampanhaApi";
+import type {
+  SituacaoTituloCampanhaApi,
+  TituloCampanhaApi,
+} from "../tipos/TituloCampanhaApi";
+
+type FiltroSituacao = "todas" | SituacaoTituloCampanhaApi;
+
+const filtros: { valor: FiltroSituacao; nome: string }[] = [
+  { valor: "todas", nome: "Todos" },
+  { valor: "ENCONTRADO_NO_PDF", nome: "Cancelamento encontrado" },
+  { valor: "NAO_ENCONTRADO_NO_PDF", nome: "Não encontrado nos PDFs" },
+];
 
 function formatarNumero(valor: number): string {
   return valor.toLocaleString("pt-BR");
+}
+
+function normalizar(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
 function formatarMoeda(valor: number | null): string {
@@ -67,7 +80,7 @@ function DetalhesCampanha() {
 
   const [pesquisa, setPesquisa] = useState("");
 
-  const [filtroSituacao, setFiltroSituacao] = useState("todas");
+  const [filtroSituacao, setFiltroSituacao] = useState<FiltroSituacao>("todas");
 
   const [carregando, setCarregando] = useState(true);
 
@@ -191,47 +204,24 @@ function DetalhesCampanha() {
     );
   }
 
-  const termoPesquisa = pesquisa.trim().toLowerCase();
+  const termo = normalizar(pesquisa);
 
-  const titulosFiltrados = titulos.filter((titulo) => {
-    const correspondePesquisa =
-      titulo.numeroProtocolo.toLowerCase().includes(termoPesquisa) ||
-      titulo.apresentante.toLowerCase().includes(termoPesquisa);
+  const titulosPesquisados = titulos.filter(
+    (titulo) =>
+      normalizar(titulo.numeroProtocolo).includes(termo) ||
+      normalizar(titulo.apresentante).includes(termo),
+  );
 
-    const correspondeSituacao =
-      filtroSituacao === "todas" || titulo.situacao === filtroSituacao;
+  const titulosFiltrados = titulosPesquisados.filter(
+    (titulo) =>
+      filtroSituacao === "todas" || titulo.situacao === filtroSituacao,
+  );
 
-    return correspondePesquisa && correspondeSituacao;
-  });
-
-  const cards = [
-    {
-      titulo: "Total de títulos",
-      valor: formatarNumero(indicadores.totalTitulos),
-      icone: FileText,
-      cor: "text-texto",
-    },
-    {
-      titulo: "Cancelamentos encontrados",
-      valor: formatarNumero(indicadores.titulosCancelados),
-      icone: CheckCircle2,
-      cor: "text-sucesso",
-    },
-    {
-      titulo: "Não encontrados nos PDFs",
-      valor: formatarNumero(indicadores.naoEncontradosNosPdfs),
-      icone: SearchX,
-      cor: "text-coral-texto",
-    },
-    {
-      titulo: "Percentual encontrado",
-      valor: `${indicadores.percentualCancelados.toLocaleString("pt-BR", {
-        maximumFractionDigits: 2,
-      })}%`,
-      icone: Percent,
-      cor: "text-destaque",
-    },
-  ];
+  function contarFiltro(valor: FiltroSituacao): number {
+    return valor === "todas"
+      ? titulosPesquisados.length
+      : titulosPesquisados.filter((titulo) => titulo.situacao === valor).length;
+  }
 
   return (
     <div className="space-y-6">
@@ -240,10 +230,10 @@ function DetalhesCampanha() {
 
         <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="font-titulo text-4xl font-bold">{campanha.nome}</h2>
+            <h2 className="font-titulo text-3xl font-bold">{campanha.nome}</h2>
 
-            <p className="mt-2 text-sm text-texto-secundario">
-              Data de cadastro: {formatarData(campanha.dataCriacao)}
+            <p className="mt-1 text-sm text-texto-secundario">
+              Criada em {formatarData(campanha.dataCriacao)}
             </p>
           </div>
 
@@ -251,62 +241,66 @@ function DetalhesCampanha() {
         </div>
       </header>
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {cards.map((card) => {
-          const Icone = card.icone;
-
-          return (
-            <article
-              key={card.titulo}
-              className="rounded-xl border border-borda bg-superficie p-5"
-            >
-              <Icone size={22} className={card.cor} />
-
-              <p className="mt-3 text-sm text-texto-secundario">{card.titulo}</p>
-
-              <h3 className="mt-2 font-titulo text-4xl font-bold">{card.valor}</h3>
-            </article>
-          );
-        })}
-      </section>
+      <IndicadoresCancelamentos indicadores={indicadores} />
 
       <section className="rounded-xl border border-borda bg-superficie p-5">
-        <div>
-          <h3 className="text-lg font-semibold">Títulos da campanha</h3>
+        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <h3 className="font-titulo text-2xl font-bold">Títulos</h3>
 
-          <p className="mt-1 text-sm text-texto-secundario">
-            Consulte protocolos, valores, apresentantes e situações dos títulos.
-          </p>
-        </div>
-
-        <div className="mt-5 flex flex-col gap-3 md:flex-row">
-          <div className="flex flex-1 items-center gap-3 rounded-lg border border-borda px-4 py-3">
-            <Search size={18} className="text-texto-suave" />
-
-            <input
-              type="text"
-              value={pesquisa}
-              onChange={(evento) => setPesquisa(evento.target.value)}
-              placeholder="Pesquisar protocolo ou apresentante..."
-              aria-label="Pesquisar títulos"
-              className="w-full min-w-0 bg-transparent text-sm outline-none"
-            />
+            <p
+              className="mt-1 text-sm text-texto-secundario"
+              aria-live="polite"
+            >
+              Exibindo {formatarNumero(titulosFiltrados.length)} de{" "}
+              {formatarNumero(titulos.length)} títulos.
+            </p>
           </div>
 
-          <select
-            value={filtroSituacao}
-            onChange={(evento) => setFiltroSituacao(evento.target.value)}
-            aria-label="Filtrar situação dos títulos"
-            className="rounded-lg border border-borda bg-superficie px-4 py-3 text-sm outline-none"
-          >
-            <option value="todas">Todas as situações</option>
+          <div className="relative w-full md:w-80">
+            <Search
+              size={18}
+              className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-texto-suave"
+            />
 
-            <option value="ENCONTRADO_NO_PDF">Cancelamento encontrado</option>
+            <input
+              type="search"
+              value={pesquisa}
+              onChange={(evento) => setPesquisa(evento.target.value)}
+              placeholder="Pesquisar protocolo ou apresentante"
+              aria-label="Pesquisar títulos por protocolo ou apresentante"
+              className="w-full rounded-lg border border-borda bg-superficie py-2.5 pr-3 pl-10 text-sm outline-none placeholder:text-texto-suave focus:border-destaque"
+            />
+          </div>
+        </div>
 
-            <option value="NAO_ENCONTRADO_NO_PDF">
-              Não encontrado nos PDFs
-            </option>
-          </select>
+        <div
+          className="mt-4 flex flex-wrap gap-2"
+          role="group"
+          aria-label="Filtrar pela situação"
+        >
+          {filtros.map((filtro) => {
+            const ativo = filtroSituacao === filtro.valor;
+
+            return (
+              <button
+                key={filtro.valor}
+                type="button"
+                onClick={() => setFiltroSituacao(filtro.valor)}
+                aria-pressed={ativo}
+                className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                  ativo
+                    ? "border-marca bg-marca text-white"
+                    : "border-borda bg-superficie text-texto-secundario hover:bg-superficie-suave"
+                }`}
+              >
+                {filtro.nome}
+                <span className="tabular-nums">
+                  {formatarNumero(contarFiltro(filtro.valor))}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="mt-5 overflow-x-auto">
@@ -319,9 +313,11 @@ function DetalhesCampanha() {
 
                 <th className="px-3 py-3 font-medium">Apresentante</th>
 
-                <th className="px-3 py-3 font-medium">Valor do título</th>
+                <th className="px-3 py-3 text-right font-medium">
+                  Valor do título
+                </th>
 
-                <th className="px-3 py-3 font-medium">Custas</th>
+                <th className="px-3 py-3 text-right font-medium">Custas</th>
 
                 <th className="px-3 py-3 font-medium">Situação</th>
 
@@ -335,27 +331,27 @@ function DetalhesCampanha() {
                   key={titulo.tituloId}
                   className="border-b border-borda last:border-0"
                 >
-                  <td className="whitespace-nowrap px-3 py-4 font-medium">
+                  <td className="px-3 py-4 font-medium whitespace-nowrap tabular-nums">
                     {titulo.numeroProtocolo}
                   </td>
 
-                  <td className="whitespace-nowrap px-3 py-4">
+                  <td className="px-3 py-4 whitespace-nowrap tabular-nums">
                     {formatarData(titulo.dataProtocolo)}
                   </td>
 
                   <td className="px-3 py-4">{titulo.apresentante}</td>
 
-                  <td className="whitespace-nowrap px-3 py-4">
+                  <td className="px-3 py-4 text-right whitespace-nowrap tabular-nums">
                     {formatarMoeda(titulo.valorTitulo)}
                   </td>
 
-                  <td className="whitespace-nowrap px-3 py-4">
+                  <td className="px-3 py-4 text-right whitespace-nowrap tabular-nums">
                     {formatarMoeda(titulo.valorCustas)}
                   </td>
 
                   <td className="px-3 py-4">
                     <span
-                      className={`inline-block rounded-lg px-3 py-1 text-xs font-medium ${
+                      className={`inline-block rounded-lg px-3 py-1 text-xs font-medium whitespace-nowrap ${
                         titulo.situacao === "ENCONTRADO_NO_PDF"
                           ? "bg-sucesso-suave text-sucesso"
                           : "bg-superficie-suave text-texto-secundario"
@@ -367,7 +363,7 @@ function DetalhesCampanha() {
                     </span>
                   </td>
 
-                  <td className="whitespace-nowrap px-3 py-4">
+                  <td className="px-3 py-4 whitespace-nowrap tabular-nums">
                     {formatarData(titulo.dataCancelamento)}
                   </td>
                 </tr>
@@ -377,35 +373,28 @@ function DetalhesCampanha() {
                 <tr>
                   <td
                     colSpan={7}
-                    className="px-4 py-10 text-center text-texto-suave"
+                    className="px-3 py-8 text-center text-texto-suave"
                   >
                     {titulos.length === 0
                       ? "Nenhum título vinculado a esta campanha."
-                      : "Nenhum título encontrado para os filtros selecionados."}
+                      : "Nenhum título corresponde à pesquisa e ao filtro."}
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-
-        <p className="mt-4 text-sm text-texto-secundario">
-          Exibindo {titulosFiltrados.length} de {titulos.length} títulos.
-        </p>
       </section>
 
-      <div className="rounded-xl border border-destaque-suave-forte bg-destaque-suave p-4">
-        <p className="text-sm text-texto-secundario">
-          <strong>Importante:</strong> os cancelamentos encontrados não
-          comprovam que a campanha foi responsável por eles. Títulos não
-          encontrados nos PDFs também não devem ser considerados automaticamente
-          ativos ou não pagos.
-        </p>
-      </div>
+      <section className="flex items-start gap-3 rounded-xl border border-destaque-suave-forte bg-destaque-suave p-4">
+        <Info size={20} className="mt-0.5 shrink-0 text-destaque" />
 
-      <p className="text-xs text-texto-suave">
-        Dados consultados no backend da ÁRIA.
-      </p>
+        <p className="text-sm text-texto-secundario">
+          Os cancelamentos encontrados não comprovam que foram causados pela
+          campanha. Títulos não encontrados nos PDFs também não devem ser
+          considerados automaticamente ativos ou não pagos.
+        </p>
+      </section>
     </div>
   );
 }
