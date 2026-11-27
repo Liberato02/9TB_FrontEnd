@@ -1,5 +1,8 @@
+import type { ComponentType } from "react";
 import type { LucideIcon } from "lucide-react";
 import { FileCheck2, Folder, LayoutGrid, Upload } from "lucide-react";
+
+import IlustracaoCancelamentos from "./cancelamentos/componentes/IlustracaoCancelamentos";
 
 export type AtalhoAutomacao = {
   nome: string;
@@ -12,6 +15,7 @@ export type Automacao = {
   nome: string;
   descricao: string;
   icone: LucideIcon;
+  ilustracao: ComponentType<{ className?: string }>;
   caminho: string;
   atalhos: AtalhoAutomacao[];
 };
@@ -23,6 +27,7 @@ export const automacoes: Automacao[] = [
     descricao:
       "Organiza os títulos de cada campanha, cruza com os cancelamentos importados dos PDFs e gera os relatórios.",
     icone: FileCheck2,
+    ilustracao: IlustracaoCancelamentos,
     caminho: "/cancelamentos/visao-geral",
     atalhos: [
       {
