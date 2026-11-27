@@ -1,171 +1,148 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 
 import { automacoes } from "../automacoes/catalogo";
 import BotaoComunicados from "../compartilhado/componentes/BotaoComunicados";
-import FundoEstrelado from "../compartilhado/componentes/FundoEstrelado";
 import SimboloAria from "../compartilhado/componentes/SimboloAria";
 
-function saudacaoPeloHorario(data: Date) {
-  const hora = data.getHours();
-
-  if (hora >= 5 && hora < 12) {
-    return "Bom dia";
-  }
-
-  if (hora >= 12 && hora < 18) {
-    return "Boa tarde";
-  }
-
-  return "Boa noite";
-}
-
-function formatarData(data: Date) {
-  const texto = data.toLocaleDateString("pt-BR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
-  return texto.charAt(0).toUpperCase() + texto.slice(1);
+function numeroDaTela(indice: number) {
+  return String(indice + 1).padStart(2, "0");
 }
 
 function Inicio() {
-  const [agora, setAgora] = useState(() => new Date());
-
-  useEffect(() => {
-    const intervalo = window.setInterval(() => setAgora(new Date()), 60000);
-
-    return () => window.clearInterval(intervalo);
-  }, []);
-
-  const disponiveis =
-    automacoes.length === 1
-      ? "1 disponível para você"
-      : `${automacoes.length} disponíveis para você`;
-
   return (
     <div
       data-tema="escuro"
-      className="relative flex min-h-screen flex-col overflow-hidden bg-noite text-texto"
+      className="h-screen snap-y snap-mandatory overflow-y-auto bg-noite text-texto"
     >
-      <FundoEstrelado />
+      <header className="fixed inset-x-0 top-0 z-20 flex items-center justify-between gap-4 px-6 py-6 md:px-12 xl:px-16">
+        <div className="flex items-center gap-3">
+          <SimboloAria className="h-11 w-auto" />
 
-      <header className="relative z-10 flex items-center justify-between px-6 py-8 md:px-12 xl:px-16">
-        <div className="flex items-center gap-4">
-          <SimboloAria className="h-14 w-auto" />
-
-          <span className="font-titulo text-4xl font-bold tracking-wide text-white">
+          <span className="font-titulo text-3xl font-bold tracking-wide text-white">
             ÁRIA
           </span>
         </div>
 
-        <BotaoComunicados />
+        <div className="flex items-center gap-5">
+          <span className="hidden text-sm text-texto-secundario sm:block">
+            9º Tabelionato de Protesto de São Paulo
+          </span>
+
+          <BotaoComunicados />
+        </div>
       </header>
 
-      <main className="relative z-10 grid flex-1 items-center gap-12 px-6 py-10 md:px-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] xl:px-16">
-        <section>
-          <p className="text-sm font-medium text-coral-texto">
-            {formatarData(agora)}
-          </p>
+      <main>
+        <h1 className="sr-only">Automações da ÁRIA</h1>
 
-          <h1 className="mt-4 font-titulo text-6xl font-bold leading-none text-white xl:text-7xl">
-            {saudacaoPeloHorario(agora)}
-          </h1>
+        {automacoes.map((automacao, indice) => {
+          const Ilustracao = automacao.ilustracao;
+          const idTitulo = `automacao-${automacao.id}`;
 
-          <p className="mt-5 text-lg text-texto-secundario">
-            Escolha uma automação para começar.
-          </p>
-        </section>
+          return (
+            <section
+              key={automacao.id}
+              aria-labelledby={idTitulo}
+              className="relative flex min-h-screen snap-start items-center justify-center overflow-hidden px-6 pt-28 pb-20 md:px-12"
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 left-1/2 h-[75vh] w-[75vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-marca/45 blur-3xl"
+              />
+
+              <div className="relative z-10 flex w-full max-w-5xl flex-col items-center text-center">
+                <p className="font-titulo text-xl font-semibold tabular-nums text-coral-texto">
+                  {numeroDaTela(indice)}
+                </p>
+
+                <Ilustracao className="mt-4 h-[36vh] max-h-96 w-auto max-w-full" />
+
+                <h2
+                  id={idTitulo}
+                  className="mt-8 font-titulo text-5xl font-bold leading-tight text-white xl:text-6xl"
+                >
+                  {automacao.nome}
+                </h2>
+
+                <p className="mt-3 max-w-2xl text-lg leading-7 text-texto-secundario">
+                  {automacao.descricao}
+                </p>
+
+                <nav
+                  aria-label={`Atalhos de ${automacao.nome}`}
+                  className="mt-8 flex flex-wrap justify-center gap-3"
+                >
+                  <Link
+                    to={automacao.caminho}
+                    className="inline-flex items-center gap-2 rounded-lg bg-coral px-6 py-3 text-sm font-semibold text-noite transition-colors hover:bg-coral-forte"
+                  >
+                    Abrir
+                    <ArrowRight size={17} />
+                  </Link>
+
+                  {automacao.atalhos.map((atalho) => {
+                    const IconeAtalho = atalho.icone;
+
+                    return (
+                      <Link
+                        key={atalho.caminho}
+                        to={atalho.caminho}
+                        className="inline-flex items-center gap-2 rounded-lg border border-borda-forte bg-superficie-suave/60 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-destaque-suave"
+                      >
+                        <IconeAtalho
+                          size={17}
+                          className="shrink-0 text-texto-secundario"
+                        />
+                        {atalho.nome}
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
+
+              {indice === 0 && (
+                <p className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 text-xs text-texto-secundario">
+                  Role para ver mais
+                  <ChevronDown size={18} />
+                </p>
+              )}
+            </section>
+          );
+        })}
 
         <section
-          aria-labelledby="titulo-automacoes"
-          className="w-full max-w-4xl lg:justify-self-end"
+          aria-labelledby="proximas-automacoes"
+          className="relative flex min-h-screen snap-start items-center justify-center overflow-hidden px-6 pt-28 pb-20 md:px-12"
         >
-          <div className="flex items-end justify-between gap-4">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-1/2 h-[75vh] w-[75vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-coral/25 blur-3xl"
+          />
+
+          <div className="relative z-10 flex w-full max-w-5xl flex-col items-center text-center">
+            <p className="font-titulo text-xl font-semibold tabular-nums text-coral-texto">
+              {numeroDaTela(automacoes.length)}
+            </p>
+
+            <div
+              aria-hidden="true"
+              className="mt-4 h-[30vh] max-h-80 w-[24vh] max-w-60 rounded-2xl border-2 border-dashed border-borda-forte"
+            />
+
             <h2
-              id="titulo-automacoes"
-              className="font-titulo text-3xl font-semibold text-white"
+              id="proximas-automacoes"
+              className="mt-8 font-titulo text-5xl font-bold leading-tight text-white xl:text-6xl"
             >
-              Automações
+              Próximas automações
             </h2>
 
-            <p className="text-sm text-texto-secundario">{disponiveis}</p>
-          </div>
-
-          <div className="mt-4 space-y-4">
-            {automacoes.map((automacao) => {
-              const Icone = automacao.icone;
-
-              return (
-                <article
-                  key={automacao.id}
-                  className="rounded-2xl border border-borda-forte bg-[linear-gradient(135deg,rgba(26,53,112,0.75),rgba(12,26,46,0.85))] p-8 shadow-2xl shadow-black/30"
-                >
-                  <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-coral text-noite">
-                      <Icone size={26} />
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-titulo text-4xl font-bold leading-tight text-white">
-                        {automacao.nome}
-                      </h3>
-
-                      <p className="mt-2 max-w-xl text-base leading-6 text-texto-secundario">
-                        {automacao.descricao}
-                      </p>
-                    </div>
-
-                    <Link
-                      to={automacao.caminho}
-                      className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg bg-coral px-5 py-3 text-sm font-semibold text-noite transition-colors hover:bg-coral-forte"
-                    >
-                      Abrir
-                      <ArrowRight size={17} />
-                    </Link>
-                  </div>
-
-                  <nav
-                    aria-label={`Atalhos de ${automacao.nome}`}
-                    className="mt-8 grid gap-3 border-t border-borda-forte pt-6 sm:grid-cols-3"
-                  >
-                    {automacao.atalhos.map((atalho) => {
-                      const IconeAtalho = atalho.icone;
-
-                      return (
-                        <Link
-                          key={atalho.caminho}
-                          to={atalho.caminho}
-                          className="group flex items-center gap-3 rounded-lg border border-borda-forte bg-superficie-suave/60 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-destaque-suave"
-                        >
-                          <IconeAtalho
-                            size={18}
-                            className="shrink-0 text-texto-secundario"
-                          />
-
-                          <span>{atalho.nome}</span>
-
-                          <ArrowRight
-                            size={17}
-                            className="ml-auto shrink-0 text-texto-secundario transition-transform group-hover:translate-x-0.5"
-                          />
-                        </Link>
-                      );
-                    })}
-                  </nav>
-                </article>
-              );
-            })}
+            <p className="mt-3 max-w-2xl text-lg leading-7 text-texto-secundario">
+              Novas automações aparecem aqui conforme forem criadas.
+            </p>
           </div>
         </section>
       </main>
-
-      <footer className="relative z-10 px-6 py-6 text-xs text-texto-suave md:px-12 xl:px-16">
-        9º Tabelionato de Protesto de São Paulo
-      </footer>
     </div>
   );
 }
