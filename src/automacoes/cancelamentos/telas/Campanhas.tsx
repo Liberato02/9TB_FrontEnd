@@ -1,4 +1,4 @@
-import { CalendarDays, CalendarClock, Search, Eye } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -16,6 +16,14 @@ function formatarData(data: string): string {
   const [, ano, mes, dia] = resultado;
 
   return `${dia}/${mes}/${ano}`;
+}
+
+function normalizar(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
 function Campanhas() {
@@ -58,176 +66,141 @@ function Campanhas() {
     };
   }, []);
 
-  const totalCampanhas = campanhas.length;
+  const termo = normalizar(pesquisa);
 
-  const ultimaDataCriacao = campanhas.reduce(
-    (maisRecente, campanha) =>
-      campanha.dataCriacao > maisRecente ? campanha.dataCriacao : maisRecente,
-    "",
-  );
+  const campanhasFiltradas = campanhas
+    .filter((campanha) => normalizar(campanha.nome).includes(termo))
+    .sort((a, b) => b.dataCriacao.localeCompare(a.dataCriacao));
 
-  const campanhasFiltradas = campanhas.filter((campanha) =>
-    campanha.nome.toLowerCase().includes(pesquisa.trim().toLowerCase()),
-  );
-
-  function exibirTotal(): string {
+  function descreverLista(): string {
     if (carregando) {
-      return "Carregando...";
+      return "Carregando campanhas...";
     }
 
     if (erro) {
-      return "Indisponível";
+      return "Total de campanhas indisponível.";
     }
 
-    return totalCampanhas.toLocaleString("pt-BR");
-  }
+    const total = campanhas.length.toLocaleString("pt-BR");
 
-  function exibirUltimoCadastro(): string {
-    if (carregando) {
-      return "Carregando...";
+    if (termo) {
+      return `${campanhasFiltradas.length.toLocaleString("pt-BR")} de ${total} campanhas correspondem à pesquisa.`;
     }
 
-    if (erro) {
-      return "Indisponível";
+    if (campanhas.length === 1) {
+      return "1 campanha cadastrada, da mais recente para a mais antiga.";
     }
 
-    if (!ultimaDataCriacao) {
-      return "Nenhum";
-    }
-
-    return formatarData(ultimaDataCriacao);
+    return `${total} campanhas cadastradas, da mais recente para a mais antiga.`;
   }
 
   return (
-    <div>
-      <section className="mb-6 rounded-2xl border border-borda bg-superficie p-6">
-        <div className="flex items-center gap-3">
-          <Search size={20} className="text-texto-suave" />
+    <section className="rounded-xl border border-borda bg-superficie p-5">
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div>
+          <h2 className="font-titulo text-2xl font-bold">Campanhas</h2>
+
+          <p className="mt-1 text-sm text-texto-secundario" aria-live="polite">
+            {descreverLista()}
+          </p>
+        </div>
+
+        <div className="relative w-full md:w-80">
+          <Search
+            size={18}
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-texto-suave"
+          />
 
           <input
-            type="text"
-            placeholder="Pesquisar campanhas..."
-            aria-label="Pesquisar campanhas"
+            type="search"
+            placeholder="Pesquisar pelo nome"
+            aria-label="Pesquisar campanhas pelo nome"
             value={pesquisa}
             onChange={(evento) => setPesquisa(evento.target.value)}
-            className="w-full outline-none placeholder:text-texto-suave"
+            disabled={carregando || erro}
+            className="w-full rounded-lg border border-borda bg-superficie py-2.5 pr-3 pl-10 text-sm outline-none placeholder:text-texto-suave focus:border-destaque disabled:bg-superficie-suave"
           />
         </div>
-      </section>
+      </div>
 
-      <section
-        className="grid grid-cols-1 gap-5 md:grid-cols-2"
-        aria-busy={carregando}
-      >
-        <article className="rounded-2xl border border-borda bg-superficie p-6">
-          <div className="flex items-center gap-3">
-            <CalendarDays className="text-destaque" size={22} />
+      <div className="mt-5 overflow-x-auto" aria-busy={carregando}>
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-borda text-texto-secundario">
+            <tr>
+              <th className="px-3 py-3 font-medium">Campanha</th>
 
-            <p className="text-sm text-texto-secundario">Campanhas registradas</p>
-          </div>
+              <th className="px-3 py-3 font-medium">Data de cadastro</th>
 
-          <h3 className="mt-4 font-titulo text-4xl font-bold">{exibirTotal()}</h3>
-        </article>
+              <th className="px-3 py-3 font-medium">Ações</th>
+            </tr>
+          </thead>
 
-        <article className="rounded-2xl border border-borda bg-superficie p-6">
-          <div className="flex items-center gap-3">
-            <CalendarClock className="text-coral-texto" size={22} />
-
-            <p className="text-sm text-texto-secundario">Último cadastro</p>
-          </div>
-
-          <h3 className="mt-4 font-titulo text-4xl font-bold">
-            {exibirUltimoCadastro()}
-          </h3>
-        </article>
-      </section>
-
-      <section className="mt-8 rounded-2xl border border-borda bg-superficie p-6">
-        <h3 className="text-lg font-semibold">Histórico de campanhas</h3>
-
-        <p className="mt-2 text-sm text-texto-secundario">
-          Relação de campanhas cadastradas no banco de dados.
-        </p>
-
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-borda text-texto-secundario">
+          <tbody>
+            {carregando && (
               <tr>
-                <th className="px-4 py-3 font-medium">Campanha</th>
-
-                <th className="px-4 py-3 font-medium">Data de cadastro</th>
-
-                <th className="px-4 py-3 font-medium">Ações</th>
+                <td
+                  colSpan={3}
+                  className="px-3 py-8 text-center text-texto-suave"
+                >
+                  Carregando campanhas...
+                </td>
               </tr>
-            </thead>
+            )}
 
-            <tbody>
-              {carregando && (
-                <tr>
-                  <td
-                    colSpan={3}
-                    className="px-4 py-10 text-center text-texto-suave"
-                  >
-                    Carregando campanhas...
+            {!carregando && erro && (
+              <tr>
+                <td
+                  colSpan={3}
+                  role="alert"
+                  className="px-3 py-8 text-center text-erro"
+                >
+                  Não foi possível carregar as campanhas. Verifique a conexão
+                  com o backend.
+                </td>
+              </tr>
+            )}
+
+            {!carregando && !erro && campanhasFiltradas.length === 0 && (
+              <tr>
+                <td
+                  colSpan={3}
+                  className="px-3 py-8 text-center text-texto-suave"
+                >
+                  {termo
+                    ? "Nenhuma campanha corresponde à pesquisa."
+                    : "Nenhuma campanha cadastrada."}
+                </td>
+              </tr>
+            )}
+
+            {!carregando &&
+              !erro &&
+              campanhasFiltradas.map((campanha) => (
+                <tr
+                  key={campanha.id}
+                  className="border-b border-borda last:border-0"
+                >
+                  <td className="px-3 py-4 font-medium">{campanha.nome}</td>
+
+                  <td className="px-3 py-4 tabular-nums">
+                    {formatarData(campanha.dataCriacao)}
+                  </td>
+
+                  <td className="px-3 py-4">
+                    <Link
+                      to={`/cancelamentos/campanhas/${campanha.id}`}
+                      className="inline-flex items-center gap-1 whitespace-nowrap font-medium text-destaque hover:underline"
+                    >
+                      Detalhes
+                      <ArrowRight size={15} />
+                    </Link>
                   </td>
                 </tr>
-              )}
-
-              {!carregando && erro && (
-                <tr>
-                  <td
-                    colSpan={3}
-                    role="alert"
-                    className="px-4 py-10 text-center text-erro"
-                  >
-                    Não foi possível carregar as campanhas. Verifique a conexão
-                    com o backend.
-                  </td>
-                </tr>
-              )}
-
-              {!carregando && !erro && campanhasFiltradas.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={3}
-                    className="px-4 py-10 text-center text-texto-suave"
-                  >
-                    {pesquisa.trim()
-                      ? "Nenhuma campanha corresponde à pesquisa."
-                      : "Nenhuma campanha encontrada."}
-                  </td>
-                </tr>
-              )}
-
-              {!carregando &&
-                !erro &&
-                campanhasFiltradas.map((campanha) => (
-                  <tr
-                    key={campanha.id}
-                    className="border-b border-borda last:border-0"
-                  >
-                    <td className="px-4 py-4 font-medium">{campanha.nome}</td>
-
-                    <td className="px-4 py-4">
-                      {formatarData(campanha.dataCriacao)}
-                    </td>
-
-                    <td className="px-4 py-4">
-                      <Link
-                        to={`/cancelamentos/campanhas/${campanha.id}`}
-                        className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-destaque-suave px-3 py-2 font-medium text-texto transition-colors hover:bg-destaque-suave-forte"
-                      >
-                        <Eye size={17} />
-                        Ver detalhes
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
 
