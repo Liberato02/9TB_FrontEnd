@@ -134,6 +134,22 @@ function VisaoGeral() {
   const falhaIndicadoresRecente =
     campanhaRecente !== undefined && falhasIndicadores.has(campanhaRecente.id);
 
+  function descreverTotalCampanhas(): string {
+    if (carregandoCampanhas) {
+      return "Carregando campanhas...";
+    }
+
+    if (erroCampanhas) {
+      return "Total de campanhas indisponível.";
+    }
+
+    if (campanhas.length === 1) {
+      return "1 campanha cadastrada.";
+    }
+
+    return `${formatarNumero(campanhas.length)} campanhas cadastradas.`;
+  }
+
   function exibirValor(
     campanhaIdConsulta: number,
     campo:
@@ -246,10 +262,12 @@ function VisaoGeral() {
       <section className="rounded-xl border border-borda bg-superficie p-5">
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
           <div>
-            <h3 className="text-lg font-semibold">Resumo das Campanhas</h3>
+            <h3 className="font-titulo text-2xl font-bold">
+              Comparação das campanhas
+            </h3>
 
             <p className="mt-1 text-sm text-texto-secundario">
-              Comparação dos indicadores reais de títulos e cancelamentos
+              {descreverTotalCampanhas()} Indicadores de títulos e cancelamentos
               encontrados nos PDFs importados.
             </p>
           </div>
@@ -272,17 +290,21 @@ function VisaoGeral() {
               <tr>
                 <th className="px-3 py-3 font-medium">Campanha</th>
 
-                <th className="px-3 py-3 font-medium">Total de títulos</th>
+                <th className="px-3 py-3 text-right font-medium">
+                  Total de títulos
+                </th>
 
-                <th className="px-3 py-3 font-medium">
+                <th className="px-3 py-3 text-right font-medium">
                   Cancelamentos encontrados
                 </th>
 
-                <th className="px-3 py-3 font-medium">
+                <th className="px-3 py-3 text-right font-medium">
                   Não encontrados nos PDFs
                 </th>
 
-                <th className="px-3 py-3 font-medium">Percentual encontrado</th>
+                <th className="px-3 py-3 text-right font-medium">
+                  Percentual encontrado
+                </th>
 
                 <th className="px-3 py-3 font-medium">Ações</th>
               </tr>
@@ -334,19 +356,19 @@ function VisaoGeral() {
                   >
                     <td className="px-3 py-4 font-medium">{campanha.nome}</td>
 
-                    <td className="px-3 py-4">
+                    <td className="px-3 py-4 text-right tabular-nums">
                       {exibirValor(campanha.id, "totalTitulos")}
                     </td>
 
-                    <td className="px-3 py-4">
+                    <td className="px-3 py-4 text-right tabular-nums">
                       {exibirValor(campanha.id, "titulosCancelados")}
                     </td>
 
-                    <td className="px-3 py-4">
+                    <td className="px-3 py-4 text-right tabular-nums">
                       {exibirValor(campanha.id, "naoEncontradosNosPdfs")}
                     </td>
 
-                    <td className="px-3 py-4">
+                    <td className="px-3 py-4 text-right tabular-nums">
                       {exibirValor(campanha.id, "percentualCancelados")}
                     </td>
 
