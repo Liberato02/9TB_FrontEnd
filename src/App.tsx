@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useParams } from "react-router-dom";
 
 import { navegacaoCancelamentos } from "./automacoes/cancelamentos/navegacao";
 import LayoutAutomacao from "./compartilhado/componentes/LayoutAutomacao";
+import RotaProtegida from "./compartilhado/componentes/RotaProtegida";
 import Inicio from "./paginas/Inicio";
 import PaginaNaoEncontrada from "./paginas/PaginaNaoEncontrada";
 
@@ -33,8 +34,6 @@ function RedirecionarDetalheCampanha() {
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Inicio />} />
-
       <Route
         path="/login"
         element={
@@ -71,27 +70,34 @@ function App() {
         element={<Navigate to="/cancelamentos/campanhas" replace />}
       />
 
-      <Route element={<LayoutAutomacao navegacao={navegacaoCancelamentos} />}>
-        <Route path="/cancelamentos/visao-geral" element={<VisaoGeral />} />
+      <Route element={<RotaProtegida />}>
+        <Route path="/" element={<Inicio />} />
 
-        <Route path="/cancelamentos/campanhas" element={<Campanhas />} />
+        <Route element={<LayoutAutomacao navegacao={navegacaoCancelamentos} />}>
+          <Route path="/cancelamentos/visao-geral" element={<VisaoGeral />} />
 
-        <Route
-          path="/cancelamentos/campanhas/:id"
-          element={<DetalhesCampanha />}
-        />
+          <Route path="/cancelamentos/campanhas" element={<Campanhas />} />
 
-        <Route
-          path="/cancelamentos/analises"
-          element={<Navigate to="/cancelamentos/visao-geral" replace />}
-        />
+          <Route
+            path="/cancelamentos/campanhas/:id"
+            element={<DetalhesCampanha />}
+          />
 
-        <Route path="/cancelamentos/importar" element={<ImportarArquivos />} />
+          <Route
+            path="/cancelamentos/analises"
+            element={<Navigate to="/cancelamentos/visao-geral" replace />}
+          />
 
-        <Route
-          path="/cancelamentos/relatorios"
-          element={<Navigate to="/cancelamentos/campanhas" replace />}
-        />
+          <Route
+            path="/cancelamentos/importar"
+            element={<ImportarArquivos />}
+          />
+
+          <Route
+            path="/cancelamentos/relatorios"
+            element={<Navigate to="/cancelamentos/campanhas" replace />}
+          />
+        </Route>
       </Route>
 
       <Route

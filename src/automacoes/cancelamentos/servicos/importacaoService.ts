@@ -1,3 +1,4 @@
+import { cabecalhoCsrf } from "../../../compartilhado/servicos/autenticacaoService";
 
 import type { ImportacaoCsvApi } from "../tipos/ImportacaoCsvApi";
 import type { ImportacaoPdfApi } from "../tipos/ImportacaoPdfApi";
@@ -83,6 +84,7 @@ async function enviarArquivo<T>(
       method: "POST",
       headers: {
         Accept: "application/json",
+        ...cabecalhoCsrf(),
       },
       body: formulario,
     });

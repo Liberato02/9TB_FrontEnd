@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, UserRound } from "lucide-react";
 
 import SimboloAria from "../compartilhado/componentes/SimboloAria";
+import { ErroCredenciais } from "../compartilhado/servicos/autenticacaoService";
+import { useSessao } from "../compartilhado/sessao/contextoSessao";
 
 const texturaDiagonal =
   "repeating-linear-gradient(145deg, transparent 0px, transparent 88px, rgba(255, 255, 255, 0.035) 89px, transparent 91px)";
@@ -14,14 +16,37 @@ const classeCampo =
   "h-12 w-full rounded-lg border border-transparent bg-white py-3 pl-12 text-sm text-noite outline-none transition-colors duration-200 placeholder:text-slate-500 focus:border-coral focus:ring-2 focus:ring-coral/30";
 
 function Login() {
-  const navigate = useNavigate();
+  const { usuario, carregando, entrar } = useSessao();
   const [identificador, setIdentificador] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
-  function entrar(evento: FormEvent<HTMLFormElement>) {
+  if (usuario) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (carregando) {
+    return <div className="min-h-screen bg-noite" />;
+  }
+
+  async function enviar(evento: FormEvent<HTMLFormElement>) {
     evento.preventDefault();
-    navigate("/", { replace: true });
+    setErro(null);
+    setEnviando(true);
+
+    try {
+      await entrar(identificador.trim(), senha);
+    } catch (falha) {
+      setErro(
+        falha instanceof ErroCredenciais
+          ? "Usuário ou senha incorretos."
+          : "Não foi possível conectar à ÁRIA. Tente novamente.",
+      );
+      setSenha("");
+      setEnviando(false);
+    }
   }
 
   return (
@@ -73,7 +98,16 @@ function Login() {
             </p>
           </header>
 
-          <form onSubmit={entrar} className="mt-8 space-y-5">
+          <form onSubmit={enviar} className="mt-8 space-y-5">
+            {erro && (
+              <p
+                role="alert"
+                className="rounded-lg border border-erro/40 bg-erro-suave px-4 py-3 text-sm text-erro"
+              >
+                {erro}
+              </p>
+            )}
+
             <div>
               <label
                 htmlFor="identificador"
@@ -144,7 +178,8 @@ function Login() {
 
             <button
               type="submit"
-              className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-coral text-base font-semibold text-noite transition-colors duration-200 hover:bg-coral-forte focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-coral"
+              disabled={enviando}
+              className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-coral text-base font-semibold text-noite transition-colors duration-200 hover:bg-coral-forte disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-coral"
             >
               Entrar
               <ArrowRight size={19} />
