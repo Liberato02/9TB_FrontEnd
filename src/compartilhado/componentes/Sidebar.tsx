@@ -11,6 +11,7 @@ type SidebarProps = {
 
 function Sidebar({ navegacao }: SidebarProps) {
   const [menuAberto, setMenuAberto] = useState(false);
+  const IconeAutomacao = navegacao.icone;
 
   function fecharMenu() {
     setMenuAberto(false);
@@ -60,11 +61,17 @@ function Sidebar({ navegacao }: SidebarProps) {
           Todas as automações
         </Link>
 
-        <p className="mt-8 px-3 text-xs font-semibold uppercase tracking-wider text-coral-texto">
-          {navegacao.nome}
-        </p>
+        <div className="mt-8 flex items-center gap-3 px-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-coral text-noite">
+            <IconeAutomacao size={18} />
+          </div>
 
-        <nav aria-label={navegacao.nome} className="mt-3 space-y-1">
+          <h2 className="font-titulo text-2xl font-semibold leading-tight text-white">
+            {navegacao.nome}
+          </h2>
+        </div>
+
+        <nav aria-label={navegacao.nome} className="mt-4 space-y-1">
           {navegacao.menu.map((item) => {
             const Icone = item.icone;
 

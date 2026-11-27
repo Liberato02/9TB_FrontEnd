@@ -14,6 +14,7 @@ export type PaginaAutomacao = {
 
 export type NavegacaoAutomacao = {
   nome: string;
+  icone: LucideIcon;
   menu: ItemMenuAutomacao[];
   paginas: PaginaAutomacao[];
 };

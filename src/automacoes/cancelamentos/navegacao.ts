@@ -1,9 +1,10 @@
-import { Folder, LayoutGrid, Upload } from "lucide-react";
+import { FileCheck2, Folder, LayoutGrid, Upload } from "lucide-react";
 
 import type { NavegacaoAutomacao } from "../../compartilhado/tipos/NavegacaoAutomacao";
 
 export const navegacaoCancelamentos: NavegacaoAutomacao = {
   nome: "Campanhas de cancelamento",
+  icone: FileCheck2,
   menu: [
     {
       nome: "Visão geral",
