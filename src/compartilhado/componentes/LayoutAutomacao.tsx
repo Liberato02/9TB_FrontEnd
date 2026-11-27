@@ -4,6 +4,7 @@ import { matchPath, Outlet, useLocation } from "react-router-dom";
 import type { NavegacaoAutomacao } from "../tipos/NavegacaoAutomacao";
 import AlternarTema from "./AlternarTema";
 import BotaoComunicados from "./BotaoComunicados";
+import BotaoSair from "./BotaoSair";
 import Sidebar from "./Sidebar";
 
 type LayoutAutomacaoProps = {
@@ -44,6 +45,8 @@ function LayoutAutomacao({ navegacao }: LayoutAutomacaoProps) {
             <AlternarTema />
 
             <BotaoComunicados />
+
+            <BotaoSair />
           </div>
         </header>
 

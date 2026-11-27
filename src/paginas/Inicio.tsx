@@ -3,6 +3,7 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 
 import { automacoes } from "../automacoes/catalogo";
 import BotaoComunicados from "../compartilhado/componentes/BotaoComunicados";
+import BotaoSair from "../compartilhado/componentes/BotaoSair";
 import SimboloAria from "../compartilhado/componentes/SimboloAria";
 
 function numeroDaTela(indice: number) {
@@ -30,6 +31,8 @@ function Inicio() {
           </span>
 
           <BotaoComunicados />
+
+          <BotaoSair />
         </div>
       </header>
 
