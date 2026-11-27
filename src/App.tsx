@@ -1,10 +1,12 @@
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useParams } from "react-router-dom";
 
 import { navegacaoCancelamentos } from "./automacoes/cancelamentos/navegacao";
 import LayoutAutomacao from "./compartilhado/componentes/LayoutAutomacao";
 import Inicio from "./paginas/Inicio";
 import PaginaNaoEncontrada from "./paginas/PaginaNaoEncontrada";
+
+const Login = lazy(() => import("./paginas/Login"));
 
 const VisaoGeral = lazy(
   () => import("./automacoes/cancelamentos/telas/VisaoGeral"),
@@ -32,6 +34,15 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Inicio />} />
+
+      <Route
+        path="/login"
+        element={
+          <Suspense fallback={<div className="min-h-screen bg-noite" />}>
+            <Login />
+          </Suspense>
+        }
+      />
 
       <Route
         path="/cancelamentos"
