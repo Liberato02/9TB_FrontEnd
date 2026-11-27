@@ -1,4 +1,5 @@
 
+import { conferirSessao } from "../../../compartilhado/servicos/autenticacaoService";
 import type { CampanhaApi } from "../tipos/CampanhaApi";
 import type { IndicadoresCampanhaApi } from "../tipos/IndicadoresCampanhaApi";
 import type { TituloCampanhaApi } from "../tipos/TituloCampanhaApi";
@@ -23,6 +24,8 @@ async function consultarApi<T>(caminho: string): Promise<T> {
       Accept: "application/json",
     },
   });
+
+  conferirSessao(resposta);
 
   if (!resposta.ok) {
     throw new ErroConsultaApi(

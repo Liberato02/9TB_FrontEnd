@@ -16,7 +16,7 @@ const classeCampo =
   "h-12 w-full rounded-lg border border-transparent bg-white py-3 pl-12 text-sm text-noite outline-none transition-colors duration-200 placeholder:text-slate-500 focus:border-coral focus:ring-2 focus:ring-coral/30";
 
 function Login() {
-  const { usuario, carregando, entrar } = useSessao();
+  const { usuario, carregando, sessaoEncerrada, entrar } = useSessao();
   const [identificador, setIdentificador] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
@@ -99,6 +99,15 @@ function Login() {
           </header>
 
           <form onSubmit={enviar} className="mt-8 space-y-5">
+            {!erro && sessaoEncerrada && (
+              <p
+                role="status"
+                className="rounded-lg border border-borda-forte bg-superficie-suave px-4 py-3 text-sm text-texto"
+              >
+                Sua sessão foi encerrada. Entre novamente.
+              </p>
+            )}
+
             {erro && (
               <p
                 role="alert"

@@ -18,6 +18,14 @@ export class ErroCredenciais extends Error {
 
 const nomeCookieCsrf = "XSRF-TOKEN=";
 
+export const eventoSessaoEncerrada = "aria:sessao-encerrada";
+
+export function conferirSessao(resposta: Response): void {
+  if (resposta.status === 401) {
+    window.dispatchEvent(new Event(eventoSessaoEncerrada));
+  }
+}
+
 function lerTokenCsrf(): string | null {
   const item = document.cookie
     .split("; ")

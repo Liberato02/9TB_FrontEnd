@@ -1,3 +1,4 @@
+import { conferirSessao } from "../../../compartilhado/servicos/autenticacaoService";
 import type { CampanhaApi } from "../tipos/CampanhaApi";
 
 export async function listarCampanhasApi(): Promise<CampanhaApi[]> {
@@ -7,6 +8,8 @@ export async function listarCampanhasApi(): Promise<CampanhaApi[]> {
       Accept: "application/json",
     },
   });
+
+  conferirSessao(resposta);
 
   if (!resposta.ok) {
     throw new Error(
