@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FolderKanban, ArrowRight, Info } from "lucide-react";
+import { ArrowRight, Info } from "lucide-react";
 
 import IndicadoresCancelamentos from "../componentes/IndicadoresCancelamentos";
 
@@ -20,10 +20,33 @@ function formatarPercentual(valor: number): string {
   })}%`;
 }
 
+function formatarData(valor: string): string {
+  const data = new Date(valor);
+
+  if (Number.isNaN(data.getTime())) {
+    return "Não informado";
+  }
+
+  return data.toLocaleDateString("pt-BR", {
+    timeZone: valor.length === 10 ? "UTC" : undefined,
+  });
+}
+
+function encontrarMaisRecente(
+  campanhas: CampanhaApi[],
+): CampanhaApi | undefined {
+  return campanhas.reduce<CampanhaApi | undefined>(
+    (recente, campanha) =>
+      !recente ||
+      Date.parse(campanha.dataCriacao) > Date.parse(recente.dataCriacao)
+        ? campanha
+        : recente,
+    undefined,
+  );
+}
+
 function VisaoGeral() {
   const [campanhas, setCampanhas] = useState<CampanhaApi[]>([]);
-  const [campanhaId, setCampanhaId] = useState<number | null>(null);
-
   const [indicadoresPorCampanha, setIndicadoresPorCampanha] = useState<
     Record<number, IndicadoresCampanhaApi>
   >({});
@@ -48,7 +71,6 @@ function VisaoGeral() {
         }
 
         setCampanhas(campanhasApi);
-        setCampanhaId(campanhasApi[0]?.id ?? null);
         setErroCampanhas(false);
         setCarregandoCampanhas(false);
 
@@ -103,27 +125,14 @@ function VisaoGeral() {
     };
   }, []);
 
-  const campanhaSelecionada = campanhas.find(
-    (campanha) => campanha.id === campanhaId,
-  );
+  const campanhaRecente = encontrarMaisRecente(campanhas);
 
-  const indicadoresSelecionados =
-    campanhaId !== null ? indicadoresPorCampanha[campanhaId] : undefined;
+  const indicadoresRecente = campanhaRecente
+    ? indicadoresPorCampanha[campanhaRecente.id]
+    : undefined;
 
-  const falhaIndicadoresSelecionados =
-    campanhaId !== null && falhasIndicadores.has(campanhaId);
-
-  function exibirTotalCampanhas(): string {
-    if (carregandoCampanhas) {
-      return "...";
-    }
-
-    if (erroCampanhas) {
-      return "Indisponível";
-    }
-
-    return formatarNumero(campanhas.length);
-  }
+  const falhaIndicadoresRecente =
+    campanhaRecente !== undefined && falhasIndicadores.has(campanhaRecente.id);
 
   function exibirValor(
     campanhaIdConsulta: number,
@@ -158,76 +167,30 @@ function VisaoGeral() {
 
   return (
     <div className="space-y-6">
-      <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <article
-          className="flex items-center gap-4 rounded-xl border border-borda bg-superficie p-5"
-          aria-busy={carregandoCampanhas}
-        >
-          <div className="rounded-xl bg-destaque-suave p-3">
-            <FolderKanban size={25} className="text-destaque" />
-          </div>
-
-          <div>
-            <p className="text-sm text-texto-secundario">Campanhas cadastradas</p>
-
-            <p className="mt-1 font-titulo text-4xl font-bold">
-              {exibirTotalCampanhas()}
-            </p>
-          </div>
-        </article>
-
-        <article className="rounded-xl border border-borda bg-superficie p-5 lg:col-span-2">
-          <label
-            htmlFor="campanha-dashboard"
-            className="block text-sm font-semibold"
-          >
-            Campanha selecionada
-          </label>
-
-          <select
-            id="campanha-dashboard"
-            value={campanhaId ?? ""}
-            onChange={(evento) => setCampanhaId(Number(evento.target.value))}
-            disabled={
-              carregandoCampanhas || erroCampanhas || campanhas.length === 0
-            }
-            className="mt-3 w-full rounded-lg border border-borda bg-superficie px-4 py-3 text-sm outline-none focus:border-destaque disabled:bg-superficie-suave disabled:text-texto-suave"
-          >
-            {campanhas.length === 0 && (
-              <option value="">
-                {carregandoCampanhas
-                  ? "Carregando campanhas..."
-                  : "Nenhuma campanha disponível"}
-              </option>
-            )}
-
-            {campanhas.map((campanha) => (
-              <option key={campanha.id} value={campanha.id}>
-                {campanha.nome}
-              </option>
-            ))}
-          </select>
-
-          <p className="mt-2 text-sm text-texto-secundario">
-            Selecione uma campanha para visualizar seus indicadores de
-            cancelamentos.
-          </p>
-        </article>
-      </section>
-
       <section className="space-y-4">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
           <div>
-            <h3 className="text-xl font-semibold">Indicadores da Campanha</h3>
-
-            <p className="mt-1 text-sm text-texto-secundario">
-              {campanhaSelecionada?.nome ?? "Nenhuma campanha selecionada"}
+            <p className="text-sm font-semibold text-texto-secundario">
+              Campanha mais recente
             </p>
+
+            <h2 className="mt-1 font-titulo text-3xl font-bold">
+              {campanhaRecente?.nome ??
+                (carregandoCampanhas
+                  ? "Carregando campanhas..."
+                  : "Nenhuma campanha cadastrada")}
+            </h2>
+
+            {campanhaRecente && (
+              <p className="mt-1 text-sm text-texto-secundario">
+                Criada em {formatarData(campanhaRecente.dataCriacao)}
+              </p>
+            )}
           </div>
 
-          {campanhaSelecionada && (
+          {campanhaRecente && (
             <Link
-              to={`/cancelamentos/campanhas/${campanhaSelecionada.id}`}
+              to={`/cancelamentos/campanhas/${campanhaRecente.id}`}
               className="inline-flex items-center gap-2 text-sm font-medium text-destaque hover:underline"
             >
               Ver detalhes
@@ -237,8 +200,8 @@ function VisaoGeral() {
         </div>
 
         {carregandoCampanhas || carregandoIndicadores ? (
-          indicadoresSelecionados ? (
-            <IndicadoresCancelamentos indicadores={indicadoresSelecionados} />
+          indicadoresRecente ? (
+            <IndicadoresCancelamentos indicadores={indicadoresRecente} />
           ) : (
             <div
               role="status"
@@ -259,9 +222,9 @@ function VisaoGeral() {
               backend.
             </p>
           </div>
-        ) : indicadoresSelecionados ? (
-          <IndicadoresCancelamentos indicadores={indicadoresSelecionados} />
-        ) : falhaIndicadoresSelecionados ? (
+        ) : indicadoresRecente ? (
+          <IndicadoresCancelamentos indicadores={indicadoresRecente} />
+        ) : falhaIndicadoresRecente ? (
           <div
             role="alert"
             className="rounded-xl border border-alerta-suave-forte bg-alerta-suave p-5"
@@ -271,13 +234,13 @@ function VisaoGeral() {
               dados disponíveis continuam sendo exibidos.
             </p>
           </div>
-        ) : (
+        ) : campanhaRecente ? (
           <div className="rounded-xl border border-borda bg-superficie p-5">
             <p className="text-sm text-texto-secundario">
               Nenhum indicador disponível para esta campanha.
             </p>
           </div>
-        )}
+        ) : null}
       </section>
 
       <section className="rounded-xl border border-borda bg-superficie p-5">
