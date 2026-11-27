@@ -5,6 +5,7 @@ import type { UsuarioConectado } from "../servicos/autenticacaoService";
 export interface Sessao {
   usuario: UsuarioConectado | null;
   carregando: boolean;
+  sessaoEncerrada: boolean;
   entrar: (identificador: string, senha: string) => Promise<void>;
   sair: () => Promise<void>;
 }

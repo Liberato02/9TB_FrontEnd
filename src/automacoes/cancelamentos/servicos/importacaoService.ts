@@ -1,4 +1,4 @@
-import { cabecalhoCsrf } from "../../../compartilhado/servicos/autenticacaoService";
+import { cabecalhoCsrf, conferirSessao } from "../../../compartilhado/servicos/autenticacaoService";
 
 import type { ImportacaoCsvApi } from "../tipos/ImportacaoCsvApi";
 import type { ImportacaoPdfApi } from "../tipos/ImportacaoPdfApi";
@@ -93,6 +93,8 @@ async function enviarArquivo<T>(
       "Não foi possível conectar ao backend da ÁRIA.",
     );
   }
+
+  conferirSessao(resposta);
 
   if (!resposta.ok) {
     const mensagem = await obterMensagemErro(resposta);
